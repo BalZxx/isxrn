@@ -661,3 +661,39 @@ footer > a:last-child:hover {
 body.is-player-open{overflow:hidden}
 body{padding-bottom:env(safe-area-inset-bottom)}
 @media(max-width:600px){.is-mini-player{bottom:calc(10px + env(safe-area-inset-bottom));width:calc(100% - 20px);min-height:66px;border-radius:17px}.is-mini-main img{width:45px;height:45px}.is-mini-meta strong{font-size:12px}.is-player-icon{width:34px}.is-full-cover{width:min(78vw,310px)}}
+
+/* STORE IKbal SOPAN — premium polish */
+:root{--green:#c9ff62;--panel:#101411;--border:rgba(207,255,147,.13)}
+body{background:radial-gradient(ellipse at 80% 0%,rgba(134,180,71,.09),transparent 34%),#070908}
+.navbar{background:rgba(7,9,8,.82);border-bottom-color:rgba(255,255,255,.07)}
+.brand-icon{box-shadow:0 0 28px rgba(201,255,98,.18)}
+.hero{min-height:690px;background:radial-gradient(ellipse at 76% 45%,rgba(169,222,88,.19),transparent 32%),radial-gradient(ellipse at 10% 90%,rgba(74,105,51,.13),transparent 40%),linear-gradient(120deg,#101611,#070908 70%)}
+.hero h1{font-size:clamp(58px,8.4vw,112px);letter-spacing:-7px}
+.art-card{border-radius:22px;background:linear-gradient(145deg,#2b3b20,#121b0e 58%,#090d08);border-color:rgba(201,255,98,.45);box-shadow:0 30px 90px #000b,0 0 65px rgba(201,255,98,.08)}
+.art-circle{border-style:dashed;animation:is-orbit 36s linear infinite}
+@keyframes is-orbit{to{transform:rotate(360deg)}}
+.features{background:rgba(255,255,255,.015);border-color:rgba(255,255,255,.07)}
+.catalog{padding-top:120px;padding-bottom:125px}
+.song-grid{grid-template-columns:repeat(auto-fill,minmax(225px,1fr));gap:22px}
+.song-card{background:linear-gradient(155deg,rgba(24,29,24,.98),rgba(12,15,13,.98));border:1px solid rgba(255,255,255,.075);border-radius:15px;box-shadow:0 12px 35px rgba(0,0,0,.18)}
+.song-card:hover{transform:translateY(-6px);border-color:rgba(201,255,98,.42);box-shadow:0 22px 55px #0009,0 0 28px rgba(201,255,98,.055)}
+.song-card>img{transition:transform .5s ease;aspect-ratio:1.06}
+.song-card:hover>img{transform:scale(1.025)}
+.song-info{padding:19px}
+.song-info h3{font-size:15px;letter-spacing:-.2px}
+.song-price{font-size:18px}
+.play-button,.buy-button{border-radius:9px!important;transition:transform .2s,filter .2s}
+.play-button:hover,.buy-button:hover{transform:translateY(-2px);filter:brightness(1.12)}
+.search-box{border-radius:13px;background:rgba(255,255,255,.035);border-color:rgba(255,255,255,.09)}
+.search-box:focus-within{border-color:rgba(201,255,98,.55);box-shadow:0 0 0 4px rgba(201,255,98,.06)}
+.about{background:radial-gradient(ellipse at 15% 50%,#263719 0%,transparent 38%),linear-gradient(120deg,#101510,#0b0e0c);border-color:rgba(255,255,255,.07)}
+.is-mini-player{background:rgba(19,24,19,.88);border-color:rgba(201,255,98,.28);box-shadow:0 18px 65px #000c,0 0 35px rgba(201,255,98,.07)}
+.is-mini-main img{box-shadow:0 4px 16px #0008}
+.is-full-player{background:radial-gradient(ellipse at 50% 15%,rgba(126,165,75,.28),transparent 40%),linear-gradient(155deg,#151c14,#080a09 70%);backdrop-filter:blur(24px)}
+.is-full-cover{border-radius:24px;box-shadow:0 28px 80px #000b,0 0 45px rgba(201,255,98,.08)}
+.is-full-inner h2{font-size:28px;letter-spacing:-.7px}
+.is-wave{height:76px;gap:4px}
+.is-wave i{width:5px;min-height:5px;border-radius:20px;background:linear-gradient(180deg,#e4ffb0,#a6df4b);box-shadow:0 0 12px rgba(201,255,98,.24)}
+.is-full-controls .is-full-play{box-shadow:0 8px 30px rgba(201,255,98,.22)}
+.is-full-options select{border-radius:10px}
+@media(max-width:650px){.hero h1{font-size:64px;letter-spacing:-4px}.song-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.song-card{border-radius:12px}.song-info{padding:12px}.catalog{padding-top:75px;padding-bottom:95px}}
