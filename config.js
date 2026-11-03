@@ -2,7 +2,7 @@
 window.STORE_CONFIG = {
   WHATSAPP_NUMBER: "6283148451522",
 
-  SUPABASE_URL: "https://mnqnhjearyzqfchfeald.supabase.co/rest/v1/",
+  SUPABASE_URL: "https://mnqnhjearyzqfchfeald.supabase.co",
 
   SUPABASE_ANON_KEY: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1ucW5oamVhcnl6cWZjaGZlYWxkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTM3MjY0MTgsImV4cCI6MjEwOTMwMjQxOH0.Gm1IkP1PusAMT_sQrQ237l8FOKW_rlGmHQ0wbyvlEdg"
 };
