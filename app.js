@@ -5,7 +5,7 @@ const PHONE = CONFIG.WHATSAPP_NUMBER || "6283148451522";
 let songs = [];
 let currentAudio = null;
 let currentButton = null;
-let currentCard = null;
+let currentCard = null;\nlet currentSong = null;
 
 const songList = document.getElementById("songList");
 const searchInput = document.getElementById("searchInput");
@@ -78,7 +78,7 @@ function renderSongs(keyword = "") {
     const audio = song.preview_url || song.audio_url || "";
 
     return `
-      <article class="song-card">
+      <article class="song-card" data-song-index="${songs.indexOf(song)}">
         <img src="${cover}"
           alt="${title}"
           onerror="this.src='https://placehold.co/500x500/191919/c6ff55?text=STORE+IS'">
