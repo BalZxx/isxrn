@@ -127,23 +127,17 @@ function changePlaybackRate(select) {
 
 // MEMPERBARUI WAKTU MUSIK
 function updateMusicControls() {
-  if (!currentAudio || !currentCard) return;
-
-  const slider = currentCard.querySelector(".seek-bar");
-  const now = currentCard.querySelector(".current-time");
-  const total = currentCard.querySelector(".duration-time");
-
-  if (!slider || !now || !total) return;
-
-  const duration = currentAudio.duration || 0;
-  const position = currentAudio.currentTime || 0;
-
-  slider.value = duration
-    ? (position / duration) * 100
-    : 0;
-
-  now.textContent = formatMusicTime(position);
-  total.textContent = formatMusicTime(duration);
+  if (!currentAudio) return;
+  if (currentCard) {
+    const slider = currentCard.querySelector(".seek-bar");
+    const now = currentCard.querySelector(".current-time");
+    const total = currentCard.querySelector(".duration-time");
+    const duration = currentAudio.duration || 0;
+    const position = currentAudio.currentTime || 0;
+    if (slider) slider.value = duration ? (position / duration) * 100 : 0;
+    if (now) now.textContent = formatMusicTime(position);
+    if (total) total.textContent = formatMusicTime(duration);
+  }
   updatePersistentPlayer();
 }
 
