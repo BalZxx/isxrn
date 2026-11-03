@@ -84,88 +84,21 @@ function renderSongs(keyword = "") {
 
     return `
       <article class="song-card" data-song-index="${songs.indexOf(song)}">
-        <img src="${cover}"
-          alt="${title}"
-          onerror="this.src='https://placehold.co/500x500/191919/c6ff55?text=STORE+IS'">
-
+        <div class="song-cover-wrap">
+          <img src="${cover}" alt="${title}"
+            loading="lazy"
+            onerror="this.src='https://placehold.co/500x500/171a17/c9ff62?text=STORE+MUSIC'">
+          <button class="card-preview" type="button"
+            onclick="playSong('${escapeJS(audio)}', this)">▶ Preview</button>
+        </div>
         <div class="song-info">
-          <h3>${title}</h3>
-          <p>${artist}</p>
-          <div class="song-price">${price}</div>
-
-          <div class="music-controls" style="
-            margin:14px 0;
-            padding:12px;
-            background:#171717;
-            border:1px solid #333;
-            border-radius:12px;
-            color:#fff;
-          ">
-            <input
-              type="range"
-              class="seek-bar"
-              min="0"
-              max="100"
-              value="0"
-              step="0.1"
-              oninput="seekSong(this)"
-              style="
-                width:100%;
-                accent-color:#c6ff55;
-                cursor:pointer;
-              ">
-
-            <div style="
-              display:flex;
-              justify-content:space-between;
-              color:#aaa;
-              font-size:12px;
-              margin-top:5px;
-            ">
-              <span class="current-time">0:00</span>
-              <span class="duration-time">0:00</span>
-            </div>
-
-            <div style="margin-top:10px;">
-              <label style="font-size:12px;color:#aaa;">
-                Kecepatan musik
-              </label>
-
-              <select
-                class="speed-control"
-                onchange="changePlaybackRate(this)"
-                style="
-                  display:block;
-                  width:100%;
-                  margin-top:5px;
-                  padding:8px;
-                  background:#242424;
-                  color:#c6ff55;
-                  border:1px solid #444;
-                  border-radius:7px;
-                ">
-                <option value="0.5">0.5x</option>
-                <option value="0.75">0.75x</option>
-                <option value="1" selected>1x Normal</option>
-                <option value="1.25">1.25x</option>
-                <option value="1.5">1.5x</option>
-                <option value="2">2x</option>
-              </select>
-            </div>
+          <div class="song-meta">
+            <h3>${title}</h3>
+            <p>${artist}</p>
           </div>
-
-          <div class="song-actions">
-            <button class="play-button"
-              onclick="playSong('${escapeJS(audio)}', this)">
-              ▶ Preview
-            </button>
-
-            <a class="buy-button"
-              href="${buyLink(song)}"
-              target="_blank"
-              rel="noopener">
-              BELI ↗
-            </a>
+          <div class="song-bottom">
+            <strong class="song-price">${price}</strong>
+            <a class="buy-button" href="${buyLink(song)}" target="_blank" rel="noopener">Beli lagu ↗</a>
           </div>
         </div>
       </article>`;
@@ -493,8 +426,8 @@ function startAudioVisualizer(audio) {
     if (!audioContext) audioContext = new AudioContextClass();
     if (audioContext.state === 'suspended') audioContext.resume();
     analyser = audioContext.createAnalyser();
-    analyser.fftSize = 128;
-    analyser.smoothingTimeConstant = 0.78;
+    analyser.fftSize = 256;
+    analyser.smoothingTimeConstant = 0.68;
     visualizerSource = audio.__storeVisualizerSource || audioContext.createMediaElementSource(audio);
     audio.__storeVisualizerSource = visualizerSource;
     visualizerSource.connect(analyser);
@@ -504,9 +437,13 @@ function startAudioVisualizer(audio) {
       if (!analyser || audio !== currentAudio) return;
       analyser.getByteFrequencyData(data);
       bars.forEach((bar, index) => {
-        const bin = Math.min(data.length - 1, Math.floor(index / bars.length * data.length));
+        const position = index / Math.max(1, bars.length - 1);
+        const perceptual = Math.pow(position, 1.65);
+        const bin = Math.min(data.length - 1, Math.max(1, Math.floor(1 + perceptual * (data.length - 2))));
         const level = data[bin] / 255;
-        bar.style.height = Math.max(5, 5 + level * 58) + 'px';
+        const neighbor = data[Math.min(data.length - 1, bin + 1)] / 255;
+        const energy = Math.min(1, level * 0.72 + neighbor * 0.28);
+        bar.style.height = Math.max(3, 3 + energy * 62) + 'px';
         bar.style.transform = 'scaleY(1)';
         bar.style.opacity = String(0.45 + level * 0.55);
       });
