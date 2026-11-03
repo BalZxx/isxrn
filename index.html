@@ -119,6 +119,43 @@
   <a href="https://wa.me/6283148451522">WHATSAPP ↗</a>
 </footer>
 
+
+<div id="isMiniPlayer" class="is-mini-player" hidden>
+  <div class="is-mini-progress"><span id="isMiniProgress"></span></div>
+  <button class="is-mini-main" id="isExpandPlayer" aria-label="Buka pemutar">
+    <img id="isMiniCover" src="" alt="Cover lagu">
+    <span class="is-mini-meta"><strong id="isMiniTitle">Belum ada lagu</strong><small id="isMiniArtist">Store Ikbal Sopan</small></span>
+  </button>
+  <button class="is-player-icon" id="isMiniPlay" aria-label="Putar atau jeda">▶</button>
+  <button class="is-player-icon" id="isMiniNext" aria-label="Lagu berikutnya">»</button>
+</div>
+<div id="isFullPlayer" class="is-full-player" hidden>
+  <button id="isClosePlayer" class="is-close-player" aria-label="Tutup pemutar">⌄</button>
+  <div class="is-full-inner">
+    <div class="is-full-kicker">STORE IKBAL SOPAN · NOW PLAYING</div>
+    <img id="isFullCover" class="is-full-cover" src="" alt="Cover lagu">
+    <h2 id="isFullTitle">Belum ada lagu</h2>
+    <p id="isFullArtist">Pilih lagu dari katalog</p>
+    <div class="is-wave" id="isWave" aria-hidden="true"><i style="--i:0;--h:18%"></i><i style="--i:1;--h:35%"></i><i style="--i:2;--h:52%"></i><i style="--i:3;--h:69%"></i><i style="--i:4;--h:21%"></i><i style="--i:5;--h:38%"></i><i style="--i:6;--h:55%"></i><i style="--i:7;--h:72%"></i><i style="--i:8;--h:24%"></i><i style="--i:9;--h:41%"></i><i style="--i:10;--h:58%"></i><i style="--i:11;--h:75%"></i><i style="--i:12;--h:27%"></i><i style="--i:13;--h:44%"></i><i style="--i:14;--h:61%"></i><i style="--i:15;--h:78%"></i><i style="--i:16;--h:30%"></i><i style="--i:17;--h:47%"></i><i style="--i:18;--h:64%"></i><i style="--i:19;--h:81%"></i><i style="--i:20;--h:33%"></i><i style="--i:21;--h:50%"></i><i style="--i:22;--h:67%"></i><i style="--i:23;--h:19%"></i><i style="--i:24;--h:36%"></i><i style="--i:25;--h:53%"></i><i style="--i:26;--h:70%"></i><i style="--i:27;--h:22%"></i><i style="--i:28;--h:39%"></i><i style="--i:29;--h:56%"></i><i style="--i:30;--h:73%"></i><i style="--i:31;--h:25%"></i><i style="--i:32;--h:42%"></i><i style="--i:33;--h:59%"></i><i style="--i:34;--h:76%"></i><i style="--i:35;--h:28%"></i></div>
+    <input id="isFullSeek" class="is-full-seek" type="range" min="0" max="100" value="0" step="0.1" aria-label="Posisi lagu">
+    <div class="is-full-times"><span id="isFullCurrent">0:00</span><span id="isFullDuration">0:00</span></div>
+    <div class="is-full-controls">
+      <button id="isPrev" aria-label="Lagu sebelumnya">|◀</button>
+      <button id="isFullPlay" class="is-full-play" aria-label="Putar atau jeda">▶</button>
+      <button id="isNext" aria-label="Lagu berikutnya">▶|</button>
+    </div>
+    <div class="is-full-options">
+      <label>Kecepatan
+        <select id="isFullSpeed">
+          <option value="0.5">0.5×</option><option value="0.75">0.75×</option>
+          <option value="1" selected>1× Normal</option><option value="1.25">1.25×</option>
+          <option value="1.5">1.5×</option><option value="2">2×</option>
+        </select>
+      </label>
+      <label>Volume <input id="isFullVolume" type="range" min="0" max="1" step="0.01" value="1"></label>
+    </div>
+  </div>
+</div>
 <script src="config.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="app.js"></script>
