@@ -495,7 +495,8 @@ function startAudioVisualizer(audio) {
     analyser = audioContext.createAnalyser();
     analyser.fftSize = 128;
     analyser.smoothingTimeConstant = 0.78;
-    visualizerSource = audioContext.createMediaElementSource(audio);
+    visualizerSource = audio.__storeVisualizerSource || audioContext.createMediaElementSource(audio);
+    audio.__storeVisualizerSource = visualizerSource;
     visualizerSource.connect(analyser);
     analyser.connect(audioContext.destination);
     const data = new Uint8Array(analyser.frequencyBinCount);
