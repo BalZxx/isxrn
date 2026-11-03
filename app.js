@@ -7,6 +7,10 @@ let currentAudio = null;
 let currentButton = null;
 let currentCard = null;
 let currentSong = null;
+let audioContext = null;
+let analyser = null;
+let visualizerFrame = null;
+let visualizerSource = null;
 
 const songList = document.getElementById("songList");
 const searchInput = document.getElementById("searchInput");
@@ -212,6 +216,7 @@ function updateMusicControls() {
 
 // MENGHENTIKAN PEMUTAR
 function resetPlayer() {
+  stopAudioVisualizer();
   if (currentButton) {
     currentButton.textContent = "▶ Preview";
   }
@@ -249,6 +254,7 @@ async function playSong(url, button) {
         await currentAudio.play();
         button.textContent = "❚❚ Pause";
         showPersistentPlayer();
+        startAudioVisualizer(currentAudio);
         syncPersistentButtons();
       } catch (error) {
         console.error(error);
@@ -273,8 +279,10 @@ async function playSong(url, button) {
     btn.textContent = "▶ Preview";
   });
 
-  const audio = new Audio(url);
+  const audio = new Audio();
+  audio.crossOrigin = "anonymous";
   audio.preload = "metadata";
+  audio.src = url;
 
   currentAudio = audio;
   currentButton = button;
@@ -302,6 +310,7 @@ async function playSong(url, button) {
     await audio.play();
     button.textContent = "❚❚ Pause";
     showPersistentPlayer();
+    startAudioVisualizer(audio);
   } catch (error) {
     console.error("Audio error:", error);
     alert("Preview tidak dapat diputar. Periksa file audio dan koneksi.");
@@ -469,3 +478,50 @@ function changeTrack(direction) {
 // JALANKAN KATALOG
 setupPersistentPlayer();
 loadSongs();
+
+// AUDIO VISUALIZER REAL-TIME
+function startAudioVisualizer(audio) {
+  stopAudioVisualizer();
+  const bars = Array.from(document.querySelectorAll('#isWave i'));
+  if (!bars.length) return;
+  try {
+    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+    if (!AudioContextClass) throw new Error('Web Audio API tidak tersedia');
+    if (!audioContext) audioContext = new AudioContextClass();
+    if (audioContext.state === 'suspended') audioContext.resume();
+    analyser = audioContext.createAnalyser();
+    analyser.fftSize = 128;
+    analyser.smoothingTimeConstant = 0.78;
+    visualizerSource = audioContext.createMediaElementSource(audio);
+    visualizerSource.connect(analyser);
+    analyser.connect(audioContext.destination);
+    const data = new Uint8Array(analyser.frequencyBinCount);
+    const draw = () => {
+      if (!analyser || audio !== currentAudio) return;
+      analyser.getByteFrequencyData(data);
+      bars.forEach((bar, index) => {
+        const bin = Math.min(data.length - 1, Math.floor(index / bars.length * data.length));
+        const level = data[bin] / 255;
+        bar.style.height = Math.max(5, 5 + level * 58) + 'px';
+        bar.style.transform = 'scaleY(1)';
+        bar.style.opacity = String(0.45 + level * 0.55);
+      });
+      visualizerFrame = requestAnimationFrame(draw);
+    };
+    draw();
+  } catch (error) {
+    console.warn('Visualizer real-time tidak tersedia; memakai animasi cadangan.', error);
+    document.getElementById('isWave')?.classList.add('is-fallback');
+  }
+}
+function stopAudioVisualizer() {
+  if (visualizerFrame) cancelAnimationFrame(visualizerFrame);
+  visualizerFrame = null;
+  if (visualizerSource) { try { visualizerSource.disconnect(); } catch (_) {} }
+  if (analyser) { try { analyser.disconnect(); } catch (_) {} }
+  visualizerSource = null;
+  analyser = null;
+  document.querySelectorAll('#isWave i').forEach(bar => {
+    bar.style.height = ''; bar.style.transform = ''; bar.style.opacity = '';
+  });
+}
