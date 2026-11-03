@@ -1,6 +1,15 @@
 const supabaseClient = window.supabase.createClient(
   window.STORE_CONFIG.SUPABASE_URL,
-  window.STORE_CONFIG.SUPABASE_ANON_KEY
+  window.STORE_CONFIG.SUPABASE_ANON_KEY,
+  {
+    auth: {
+      persistSession: true,
+      autoRefreshToken: true,
+      detectSessionInUrl: true,
+      storage: window.localStorage,
+      storageKey: "store-ikbal-sopan-admin-session"
+    }
+  }
 );
 
 const $ = (id) => document.getElementById(id);
