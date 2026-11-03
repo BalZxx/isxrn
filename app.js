@@ -37,11 +37,11 @@ function escapeJS(value) {
     .replace(/\n/g, "");
 }
 
-function formatTime(seconds) {
+function formatMusicTime(seconds) {
   if (!Number.isFinite(seconds)) return "0:00";
-  const m = Math.floor(seconds / 60);
-  const s = Math.floor(seconds % 60);
-  return `${m}:${String(s).padStart(2, "0")}`;
+  const minutes = Math.floor(seconds / 60);
+  const secs = Math.floor(seconds % 60);
+  return `${minutes}:${String(secs).padStart(2, "0")}`;
 }
 
 function buyLink(song) {
@@ -54,6 +54,7 @@ function buyLink(song) {
   return `https://wa.me/${PHONE}?text=${encodeURIComponent(message)}`;
 }
 
+// MENAMPILKAN KATALOG MUSIK
 function renderSongs(keyword = "") {
   const filtered = songs.filter(song =>
     `${song.title} ${song.artist}`
@@ -61,10 +62,11 @@ function renderSongs(keyword = "") {
       .includes(keyword.toLowerCase())
   );
 
-  musicCount.textContent = `${filtered.length} MUSIK`;
+  musicCount.textContent = `${filtered.length}`;
 
   if (!filtered.length) {
-    songList.innerHTML = `<div class="empty">Belum ada musik ditemukan.</div>`;
+    songList.innerHTML =
+      `<div class="empty">Belum ada musik ditemukan.</div>`;
     return;
   }
 
@@ -77,7 +79,8 @@ function renderSongs(keyword = "") {
 
     return `
       <article class="song-card">
-        <img src="${cover}" alt="${title}"
+        <img src="${cover}"
+          alt="${title}"
           onerror="this.src='https://placehold.co/500x500/191919/c6ff55?text=STORE+IS'">
 
         <div class="song-info">
@@ -93,14 +96,19 @@ function renderSongs(keyword = "") {
             border-radius:12px;
             color:#fff;
           ">
-            <input type="range"
+            <input
+              type="range"
               class="seek-bar"
               min="0"
               max="100"
               value="0"
               step="0.1"
               oninput="seekSong(this)"
-              style="width:100%;accent-color:#c6ff55;cursor:pointer;">
+              style="
+                width:100%;
+                accent-color:#c6ff55;
+                cursor:pointer;
+              ">
 
             <div style="
               display:flex;
@@ -114,14 +122,18 @@ function renderSongs(keyword = "") {
             </div>
 
             <div style="margin-top:10px;">
-              <label style="font-size:12px;color:#aaa;">Kecepatan musik</label>
-              <select class="speed-control"
+              <label style="font-size:12px;color:#aaa;">
+                Kecepatan musik
+              </label>
+
+              <select
+                class="speed-control"
                 onchange="changePlaybackRate(this)"
                 style="
                   display:block;
+                  width:100%;
                   margin-top:5px;
                   padding:8px;
-                  width:100%;
                   background:#242424;
                   color:#c6ff55;
                   border:1px solid #444;
@@ -155,15 +167,19 @@ function renderSongs(keyword = "") {
   }).join("");
 }
 
+// MENGGESER POSISI LAGU
 function seekSong(slider) {
   if (!currentAudio || !currentCard) return;
   if (slider.closest(".song-card") !== currentCard) return;
   if (!Number.isFinite(currentAudio.duration)) return;
 
   currentAudio.currentTime =
-    Number(slider.value) / 100 * currentAudio.duration;
+    (Number(slider.value) / 100) * currentAudio.duration;
+
+  updateMusicControls();
 }
 
+// MENGATUR KECEPATAN MUSIK
 function changePlaybackRate(select) {
   if (!currentAudio || !currentCard) return;
   if (select.closest(".song-card") !== currentCard) return;
@@ -171,7 +187,8 @@ function changePlaybackRate(select) {
   currentAudio.playbackRate = Number(select.value);
 }
 
-function updateControls() {
+// MEMPERBARUI WAKTU MUSIK
+function updateMusicControls() {
   if (!currentAudio || !currentCard) return;
 
   const slider = currentCard.querySelector(".seek-bar");
@@ -183,13 +200,19 @@ function updateControls() {
   const duration = currentAudio.duration || 0;
   const position = currentAudio.currentTime || 0;
 
-  slider.value = duration ? position / duration * 100 : 0;
-  now.textContent = formatTime(position);
-  total.textContent = formatTime(duration);
+  slider.value = duration
+    ? (position / duration) * 100
+    : 0;
+
+  now.textContent = formatMusicTime(position);
+  total.textContent = formatMusicTime(duration);
 }
 
+// MENGHENTIKAN PEMUTAR
 function resetPlayer() {
-  if (currentButton) currentButton.textContent = "▶ Preview";
+  if (currentButton) {
+    currentButton.textContent = "▶ Preview";
+  }
 
   if (currentCard) {
     const slider = currentCard.querySelector(".seek-bar");
@@ -204,19 +227,22 @@ function resetPlayer() {
   currentCard = null;
 }
 
+// PUTAR / PAUSE MUSIK
 async function playSong(url, button) {
   if (!url) {
     alert("Preview musik belum tersedia.");
     return;
   }
 
+  // Jika tombol lagu yang sama ditekan
   if (currentAudio && currentButton === button) {
     if (currentAudio.paused) {
       try {
         await currentAudio.play();
         button.textContent = "❚❚ Pause";
       } catch (error) {
-        alert("Musik tidak dapat diputar.");
+        console.error(error);
+        alert("Musik tidak dapat dilanjutkan.");
       }
     } else {
       currentAudio.pause();
@@ -225,6 +251,7 @@ async function playSong(url, button) {
     return;
   }
 
+  // Hentikan lagu sebelumnya
   if (currentAudio) {
     currentAudio.pause();
     currentAudio.src = "";
@@ -236,17 +263,21 @@ async function playSong(url, button) {
   });
 
   const audio = new Audio(url);
+  audio.preload = "metadata";
+
   currentAudio = audio;
   currentButton = button;
   currentCard = button.closest(".song-card");
 
-  audio.addEventListener("loadedmetadata", updateControls);
-  audio.addEventListener("durationchange", updateControls);
-  audio.addEventListener("timeupdate", updateControls);
+  audio.addEventListener("loadedmetadata", updateMusicControls);
+  audio.addEventListener("durationchange", updateMusicControls);
+  audio.addEventListener("timeupdate", updateMusicControls);
+
   audio.addEventListener("ended", resetPlayer);
 
   audio.addEventListener("error", () => {
-    alert("File preview tidak dapat diputar.");
+    console.error("Audio gagal dimuat:", url);
+    alert("Preview tidak dapat diputar. Periksa file audio.");
     resetPlayer();
   });
 
@@ -254,11 +285,13 @@ async function playSong(url, button) {
     await audio.play();
     button.textContent = "❚❚ Pause";
   } catch (error) {
-    alert("Musik tidak dapat diputar.");
+    console.error("Audio error:", error);
+    alert("Preview tidak dapat diputar. Periksa file audio dan koneksi.");
     resetPlayer();
   }
 }
 
+// MEMUAT KATALOG DARI SUPABASE
 async function loadSongs() {
   if (
     !window.supabase ||
@@ -266,9 +299,11 @@ async function loadSongs() {
     !CONFIG.SUPABASE_ANON_KEY ||
     CONFIG.SUPABASE_URL.includes("ISI_")
   ) {
-    songList.innerHTML =
-      `<div class="empty">Katalog sedang menunggu koneksi database.</div>`;
-    musicCount.textContent = "0 MUSIK";
+    songList.innerHTML = `
+      <div class="empty">
+        Katalog sedang menunggu koneksi database.
+      </div>`;
+    musicCount.textContent = "0";
     return;
   }
 
@@ -288,20 +323,27 @@ async function loadSongs() {
 
     songs = data || [];
     renderSongs(searchInput.value);
+
   } catch (error) {
     console.error(error);
-    songList.innerHTML =
-      `<div class="empty">Gagal memuat musik. Silakan coba lagi.</div>`;
+
+    songList.innerHTML = `
+      <div class="empty">
+        Gagal memuat musik. Silakan coba lagi nanti.
+      </div>`;
   }
 }
 
+// PENCARIAN MUSIK
 searchInput.addEventListener("input", event => {
   if (currentAudio) {
     currentAudio.pause();
     currentAudio.src = "";
     resetPlayer();
   }
+
   renderSongs(event.target.value);
 });
 
+// JALANKAN KATALOG
 loadSongs();
