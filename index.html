@@ -1,0 +1,70 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#090909">
+  <meta name="description" content="Store Ikbal Sopan - Toko musik digital.">
+  <title>Store Ikbal Sopan</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <header class="navbar">
+    <a href="index.html" class="brand">
+      <span class="brand-icon">IS</span>
+      <span>STORE <b>IKBAL SOPAN</b></span>
+    </a>
+    <a class="admin-link" href="admin.html">ADMIN ↗</a>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="hero-label">✦ DIGITAL MUSIC STORE</div>
+      <h1>Temukan Musik<br><span>Favoritmu.</span></h1>
+      <p>Koleksi musik digital dari Ikbal Sopan dan berbagai artis lainnya.</p>
+      <a href="#katalog" class="hero-button">JELAJAHI MUSIK ↓</a>
+      <div class="hero-decoration">IS.</div>
+    </section>
+
+    <section class="catalog" id="katalog">
+      <div class="section-heading">
+        <div>
+          <span class="eyebrow">OUR COLLECTION</span>
+          <h2>Katalog Musik</h2>
+        </div>
+        <span class="music-count" id="musicCount">0 MUSIK</span>
+      </div>
+
+      <div class="search-box">
+        <span>⌕</span>
+        <input id="searchInput" type="search"
+          placeholder="Cari judul atau nama artis...">
+      </div>
+
+      <div id="songList" class="song-grid">
+        <div class="loading">Memuat katalog musik...</div>
+      </div>
+    </section>
+
+    <section class="about">
+      <span class="eyebrow">ABOUT OUR STORE</span>
+      <h2>Music is our<br><span>language.</span></h2>
+      <p>Terima kasih telah mendukung karya musik kami.</p>
+    </section>
+  </main>
+
+  <footer>
+    <div class="brand">
+      <span class="brand-icon">IS</span>
+      <span>STORE <b>IKBAL SOPAN</b></span>
+    </div>
+    <p>© 2026 Store Ikbal Sopan. All rights reserved.</p>
+  </footer>
+
+  <script src="config.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="app.js"></script>
+</body>
+</html>
