@@ -5,7 +5,8 @@ const PHONE = CONFIG.WHATSAPP_NUMBER || "6283148451522";
 let songs = [];
 let currentAudio = null;
 let currentButton = null;
-let currentCard = null;\nlet currentSong = null;
+let currentCard = null;
+let currentSong = null;
 
 const songList = document.getElementById("songList");
 const searchInput = document.getElementById("searchInput");
