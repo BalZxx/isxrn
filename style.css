@@ -697,3 +697,30 @@ body{background:radial-gradient(ellipse at 80% 0%,rgba(134,180,71,.09),transpare
 .is-full-controls .is-full-play{box-shadow:0 8px 30px rgba(201,255,98,.22)}
 .is-full-options select{border-radius:10px}
 @media(max-width:650px){.hero h1{font-size:64px;letter-spacing:-4px}.song-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.song-card{border-radius:12px}.song-info{padding:12px}.catalog{padding-top:75px;padding-bottom:95px}}
+
+
+/* CATALOG — clean record-store layout */
+.song-grid{grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:18px}
+.song-card{background:#0d100e;border:1px solid #252a25;border-radius:5px;overflow:hidden;transition:border-color .2s,transform .2s}
+.song-card:hover{transform:translateY(-3px);border-color:#66754d;box-shadow:none}
+.song-cover-wrap{position:relative;aspect-ratio:1;background:#171a17;overflow:hidden}
+.song-cover-wrap img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .35s}
+.song-card:hover .song-cover-wrap img{transform:scale(1.025)}
+.card-preview{position:absolute;right:12px;bottom:12px;width:42px;height:42px;border:0;border-radius:50%;background:#f4f4ed;color:#111;font-size:15px;cursor:pointer;box-shadow:0 3px 12px #0007}
+.card-preview:hover{background:var(--green)}
+.song-info{padding:15px 15px 14px}
+.song-meta h3{font-size:14px;font-weight:650;line-height:1.35;margin:0 0 5px}
+.song-meta p{font-size:11px;color:#92988f;line-height:1.4}
+.song-bottom{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:16px;padding-top:12px;border-top:1px solid #252a25}
+.song-price{color:#f2f2ec;font-size:13px;font-weight:650;margin:0}
+.song-bottom .buy-button{flex:0 0 auto;padding:9px 12px;background:transparent;color:var(--green);border:1px solid #52613d;border-radius:3px;font-size:10px;letter-spacing:.2px}
+.song-bottom .buy-button:hover{background:var(--green);color:#10130d}
+.catalog{padding-top:82px}
+.catalog-heading{margin-bottom:30px}
+.catalog-tools{margin-bottom:22px}
+.search-box{border-radius:4px;background:#0d100e}
+.is-wave{height:86px;gap:4px;max-width:420px;margin:22px auto 18px;align-items:center}
+.is-wave i{width:3px;min-height:3px;max-height:68px;border-radius:2px;background:linear-gradient(180deg,#e3ffad 0%,#b8ef63 48%,#6b8e3e 100%);opacity:.35;transform:scaleY(.25);transition:height .07s linear,opacity .07s linear}
+.is-wave.is-playing i{animation:none}
+.is-wave.is-fallback i{animation:is-wave-pulse .8s ease-in-out infinite alternate}
+@media(max-width:600px){.song-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.song-info{padding:11px}.song-bottom{align-items:flex-start;flex-direction:column;gap:10px}.song-bottom .buy-button{width:100%;text-align:center}.card-preview{width:36px;height:36px}}
