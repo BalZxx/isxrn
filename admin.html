@@ -1,0 +1,90 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin - Store Ikbal Sopan</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+
+  <header class="navbar">
+    <a href="index.html" class="brand">
+      <span class="brand-icon">IS</span>
+      <span>STORE <b>IKBAL SOPAN</b></span>
+    </a>
+    <a href="index.html" class="admin-link">LIHAT TOKO ↗</a>
+  </header>
+
+  <main class="admin-container">
+
+    <section id="loginSection" class="admin-panel">
+      <span class="eyebrow">PRIVATE ACCESS</span>
+      <h1>Admin Login</h1>
+      <p>Masuk untuk mengelola toko musik kamu.</p>
+
+      <form id="loginForm">
+        <label>Email Admin</label>
+        <input id="email" type="email" placeholder="Email admin" required>
+
+        <label>Password</label>
+        <input id="password" type="password" placeholder="Password admin" required>
+
+        <button type="submit" class="admin-submit">LOGIN SEKARANG</button>
+        <p id="loginMessage"></p>
+      </form>
+    </section>
+
+    <section id="dashboardSection" hidden>
+      <div class="admin-heading">
+        <div>
+          <span class="eyebrow">STORE MANAGEMENT</span>
+          <h1>Dashboard Admin</h1>
+          <p>Kelola koleksi musik Store Ikbal Sopan.</p>
+        </div>
+        <button id="logoutButton" class="logout-button">Logout</button>
+      </div>
+
+      <div class="admin-panel">
+        <h2>Tambah Musik</h2>
+
+        <form id="songForm">
+          <label>Judul Lagu</label>
+          <input id="songTitle" required placeholder="Contoh: Kangen Kamu">
+
+          <label>Nama Artis</label>
+          <input id="songArtist" required placeholder="Nama artis">
+
+          <label>Harga (Rupiah)</label>
+          <input id="songPrice" type="number" min="0" required placeholder="50000">
+
+          <label>Cover Album</label>
+          <input id="songCover" type="file" accept="image/*" required>
+
+          <label>File Audio / Preview</label>
+          <input id="songAudio" type="file" accept="audio/*" required>
+
+          <button type="submit" class="admin-submit">
+            SIMPAN MUSIK
+          </button>
+
+          <p id="uploadMessage"></p>
+        </form>
+      </div>
+
+      <div class="admin-panel">
+        <h2>Daftar Musik</h2>
+        <div id="adminSongList">Memuat musik...</div>
+      </div>
+    </section>
+
+  </main>
+
+  <script src="config.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="admin.js"></script>
+
+</body>
+</html>
