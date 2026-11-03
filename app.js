@@ -467,12 +467,15 @@ async function togglePersistentPlayback() {
   syncPersistentButtons();
 }
 function changeTrack(direction) {
-  if (!currentSong || !songs.length) return;
-  const index = songs.indexOf(currentSong);
+  if (!songs.length) return;
+  const index = currentSong ? songs.indexOf(currentSong) : -1;
   const next = (index + direction + songs.length) % songs.length;
-  const card = document.querySelector('.song-card[data-song-index="' + next + '"]');
-  const button = card && card.querySelector(".play-button");
-  if (button) playSong(songs[next].preview_url || songs[next].audio_url || "", button);
+  const song = songs[next];
+  const url = song && (song.preview_url || song.audio_url || '');
+  if (!url) return;
+  const card = document.querySelector('.song-card[data-song-index="' + songs.indexOf(song) + '"]');
+  const button = (card && card.querySelector('.play-button')) || document.createElement('button');
+  playSong(url, button);
 }
 
 // JALANKAN KATALOG
