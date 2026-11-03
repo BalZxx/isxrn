@@ -1,356 +1,152 @@
-:root {
-  --admin-bg: #080a08;
-  --admin-panel: #111511;
-  --admin-border: #252d25;
-  --admin-green: #b6ff5c;
-  --admin-text: #f4f7f1;
-  --admin-muted: #929b8e;
-}
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard — Store Ikbal Sopan</title>
+  <link rel="stylesheet" href="admin.css">
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="config.js"></script>
+</head>
+<body class="admin-body">
 
-* {
-  box-sizing: border-box;
-}
+  <header class="admin-topbar">
+    <a href="index.html" class="brand">
+      <span class="brand-mark">IS</span>
+      <span>STORE <strong>IKBAL SOPAN</strong></span>
+    </a>
+    <a href="index.html" class="back-link">← Lihat Toko</a>
+  </header>
 
-body.admin-body {
-  margin: 0;
-  min-height: 100vh;
-  background: var(--admin-bg);
-  color: var(--admin-text);
-  font-family: Arial, sans-serif;
-}
+  <main class="admin-container">
 
-.admin-topbar {
-  height: 76px;
-  padding: 0 7%;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  border-bottom: 1px solid var(--admin-border);
-  background: #0b0e0b;
-}
+    <!-- LOGIN -->
+    <section id="loginSection" class="admin-panel login-panel">
+      <div class="admin-eyebrow">STORE MANAGEMENT</div>
+      <h1>Selamat Datang</h1>
+      <p class="admin-subtitle">Masuk untuk mengelola katalog musik kamu.</p>
 
-.admin-topbar .brand {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  color: var(--admin-text);
-  text-decoration: none;
-  font-size: 13px;
-  letter-spacing: 1px;
-}
+      <form id="loginForm">
+        <label for="email">Email Admin</label>
+        <input id="email" type="email" placeholder="Email admin" required>
 
-.brand-mark {
-  width: 38px;
-  height: 38px;
-  display: grid;
-  place-items: center;
-  border-radius: 11px;
-  background: var(--admin-green);
-  color: #10150b;
-  font-weight: 900;
-}
+        <label for="password">Password</label>
+        <input id="password" type="password" placeholder="Password" required>
 
-.admin-topbar .brand strong {
-  color: var(--admin-green);
-}
+        <button type="submit" class="admin-primary-btn">Masuk Dashboard</button>
+      </form>
 
-.back-link {
-  color: var(--admin-muted);
-  text-decoration: none;
-  font-size: 13px;
-}
+      <button type="button" id="forgotPasswordBtn" class="text-button">
+        Lupa password?
+      </button>
 
-.back-link:hover {
-  color: var(--admin-green);
-}
+      <p id="loginMessage" class="admin-message"></p>
+    </section>
 
-.admin-container {
-  width: min(100% - 32px, 1050px);
-  margin: 48px auto 80px;
-}
+    <!-- RESET PASSWORD -->
+    <section id="recoverySection" class="admin-panel login-panel" hidden>
+      <div class="admin-eyebrow">ACCOUNT RECOVERY</div>
+      <h1>Reset Password</h1>
+      <p class="admin-subtitle">Buat password baru untuk akun admin.</p>
 
-.admin-panel {
-  padding: 28px;
-  margin-bottom: 24px;
-  background: var(--admin-panel);
-  border: 1px solid var(--admin-border);
-  border-radius: 18px;
-}
+      <form id="recoveryForm">
+        <label for="newPassword">Password Baru</label>
+        <input id="newPassword" type="password"
+          placeholder="Minimal 6 karakter" minlength="6" required>
 
-.login-panel {
-  width: min(100%, 440px);
-  margin: 70px auto;
-  padding: 36px;
-}
+        <label for="confirmPassword">Ulangi Password</label>
+        <input id="confirmPassword" type="password"
+          placeholder="Ulangi password baru" minlength="6" required>
 
-.admin-eyebrow {
-  color: var(--admin-green);
-  font-size: 11px;
-  font-weight: 800;
-  letter-spacing: 2px;
-  margin-bottom: 12px;
-}
+        <button type="submit" class="admin-primary-btn">
+          Simpan Password Baru
+        </button>
+      </form>
 
-.admin-panel h1,
-.dashboard-heading h1 {
-  margin: 0;
-  font-size: clamp(27px, 5vw, 36px);
-  letter-spacing: -1px;
-}
+      <p id="recoveryMessage" class="admin-message"></p>
+    </section>
 
-.admin-panel h2 {
-  margin: 0 0 24px;
-  font-size: 21px;
-}
+    <!-- DASHBOARD -->
+    <section id="dashboardSection" hidden>
+      <div class="dashboard-heading">
+        <div>
+          <div class="admin-eyebrow">CONTROL CENTER</div>
+          <h1>Dashboard Admin</h1>
+          <p class="admin-subtitle">Kelola semua musik di Store Ikbal Sopan.</p>
+        </div>
+        <button id="logoutBtn" class="admin-logout-btn">Keluar</button>
+      </div>
 
-.admin-subtitle {
-  margin: 10px 0 25px;
-  color: var(--admin-muted);
-  line-height: 1.6;
-  font-size: 14px;
-}
+      <div class="admin-panel">
+        <h2 id="formTitle">Tambah Musik Baru</h2>
 
-.admin-panel label {
-  display: block;
-  margin: 17px 0 8px;
-  color: #dce4d8;
-  font-size: 13px;
-  font-weight: 700;
-}
+        <form id="songForm">
+          <input type="hidden" id="songId">
 
-.admin-panel input {
-  width: 100%;
-  min-height: 46px;
-  padding: 12px 14px;
-  border: 1px solid var(--admin-border);
-  border-radius: 9px;
-  outline: none;
-  background: #090d09;
-  color: white;
-  font: inherit;
-}
+          <div class="admin-form-grid">
+            <div>
+              <label for="songTitle">Judul Lagu</label>
+              <input id="songTitle" type="text"
+                placeholder="Contoh: Coba Kamu" required>
+            </div>
 
-.admin-panel input:focus {
-  border-color: var(--admin-green);
-  box-shadow: 0 0 0 3px #b6ff5c18;
-}
+            <div>
+              <label for="songArtist">Nama Artis</label>
+              <input id="songArtist" type="text"
+                placeholder="Contoh: Ikbal Sopan" required>
+            </div>
 
-.admin-panel input[type="file"] {
-  font-size: 12px;
-}
+            <div>
+              <label for="songPrice">Harga (Rp)</label>
+              <input id="songPrice" type="number"
+                min="0" placeholder="15000" required>
+            </div>
 
-.admin-panel small {
-  display: block;
-  margin-top: 9px;
-  color: var(--admin-muted);
-  line-height: 1.5;
-}
+            <div>
+              <label for="coverFile">Cover Lagu</label>
+              <input id="coverFile" type="file" accept="image/*">
+            </div>
 
-.admin-primary-btn,
-.admin-secondary-btn,
-.admin-logout-btn {
-  min-height: 43px;
-  padding: 0 18px;
-  border: 0;
-  border-radius: 9px;
-  cursor: pointer;
-  font-weight: 800;
-  transition: 0.2s;
-}
+            <div class="full-width">
+              <label for="audioFile">Audio Preview</label>
+              <input id="audioFile" type="file" accept="audio/*">
+              <small>Gunakan audio preview, bukan file master lagu berbayar.</small>
+            </div>
+          </div>
 
-.admin-primary-btn {
-  background: var(--admin-green);
-  color: #10150b;
-}
+          <div class="admin-form-actions">
+            <button type="submit" id="saveSongBtn" class="admin-primary-btn">
+              Simpan Musik
+            </button>
+            <button type="button" id="cancelEditBtn" class="admin-secondary-btn" hidden>
+              Batal Edit
+            </button>
+          </div>
 
-.admin-primary-btn:hover {
-  background: #d0ff91;
-  transform: translateY(-1px);
-}
+          <p id="adminMessage" class="admin-message"></p>
+        </form>
+      </div>
 
-.login-panel .admin-primary-btn {
-  width: 100%;
-  margin-top: 24px;
-}
+      <div class="admin-panel song-management">
+        <div class="song-management-heading">
+          <div>
+            <h2>Katalog Musik</h2>
+            <p class="admin-subtitle">Daftar musik yang tersimpan.</p>
+          </div>
+          <button id="refreshSongsBtn" class="admin-secondary-btn">
+            ↻ Refresh
+          </button>
+        </div>
 
-.admin-secondary-btn {
-  border: 1px solid var(--admin-border);
-  background: #191f19;
-  color: var(--admin-text);
-}
+        <div id="songsList">
+          <p class="loading">Memuat katalog musik...</p>
+        </div>
+      </div>
+    </section>
 
-.admin-secondary-btn:hover {
-  border-color: var(--admin-green);
-}
+  </main>
 
-.admin-logout-btn {
-  border: 1px solid #633c3c;
-  background: #281616;
-  color: #ffaaaa;
-}
-
-.text-button {
-  display: block;
-  margin: 18px auto 0;
-  padding: 8px;
-  border: 0;
-  background: transparent;
-  color: var(--admin-green);
-  cursor: pointer;
-}
-
-.admin-message {
-  color: var(--admin-muted);
-  font-size: 13px;
-  line-height: 1.5;
-}
-
-.dashboard-heading {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 20px;
-  margin-bottom: 28px;
-}
-
-.admin-form-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0 20px;
-}
-
-.admin-form-grid > div {
-  min-width: 0;
-}
-
-.admin-form-grid .full-width {
-  grid-column: 1 / -1;
-}
-
-.admin-form-actions {
-  display: flex;
-  gap: 10px;
-  margin-top: 25px;
-}
-
-.song-management-heading {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 15px;
-  margin-bottom: 20px;
-}
-
-.song-management-heading h2 {
-  margin-bottom: 0;
-}
-
-.song-management-heading .admin-subtitle {
-  margin-bottom: 0;
-}
-
-.admin-song-item {
-  display: flex;
-  align-items: center;
-  gap: 15px;
-  padding: 15px 0;
-  border-top: 1px solid var(--admin-border);
-}
-
-.admin-song-item img {
-  width: 65px;
-  height: 65px;
-  object-fit: cover;
-  border-radius: 10px;
-  background: #222;
-}
-
-.admin-song-info {
-  flex: 1;
-  min-width: 0;
-}
-
-.admin-song-info strong {
-  display: block;
-  overflow-wrap: anywhere;
-}
-
-.admin-song-info span {
-  display: block;
-  margin-top: 6px;
-  color: var(--admin-muted);
-  font-size: 12px;
-}
-
-.admin-song-actions {
-  display: flex;
-  gap: 8px;
-}
-
-.admin-song-actions button {
-  padding: 9px 12px;
-  border: 1px solid var(--admin-border);
-  border-radius: 8px;
-  background: #1b211b;
-  color: white;
-  cursor: pointer;
-}
-
-.admin-song-actions button:hover {
-  border-color: var(--admin-green);
-}
-
-.admin-song-actions .delete-song {
-  color: #ffaaaa;
-}
-
-.loading,
-.empty {
-  padding: 20px 0;
-  color: var(--admin-muted);
-  font-size: 14px;
-}
-
-[hidden] {
-  display: none !important;
-}
-
-@media (max-width: 600px) {
-  .admin-topbar {
-    padding: 0 18px;
-  }
-
-  .admin-container {
-    margin-top: 28px;
-  }
-
-  .admin-panel {
-    padding: 21px;
-    border-radius: 14px;
-  }
-
-  .login-panel {
-    margin-top: 35px;
-  }
-
-  .admin-form-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .admin-form-grid .full-width {
-    grid-column: auto;
-  }
-
-  .dashboard-heading {
-    align-items: flex-start;
-  }
-
-  .admin-song-item {
-    flex-wrap: wrap;
-  }
-
-  .admin-song-actions {
-    width: 100%;
-    padding-left: 80px;
-  }
-}
+  <script src="admin.js"></script>
+</body>
+</html>
