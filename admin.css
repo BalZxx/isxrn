@@ -1,0 +1,139 @@
+.admin-container {
+  max-width: 850px;
+  margin: 65px auto;
+  padding: 0 20px;
+}
+
+.admin-panel {
+  background: #121212;
+  border: 1px solid #292929;
+  border-radius: 14px;
+  padding: 30px;
+  margin-bottom: 25px;
+}
+
+.admin-panel h1 {
+  font-size: 32px;
+  margin: 15px 0;
+}
+
+.admin-panel h2 {
+  font-size: 21px;
+  margin-bottom: 22px;
+}
+
+.admin-panel > p,
+.admin-heading p {
+  color: #929292;
+  font-size: 13px;
+  margin-bottom: 25px;
+}
+
+.admin-panel form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.admin-panel label {
+  color: #c6ff55;
+  font-size: 12px;
+  margin-top: 8px;
+}
+
+.admin-panel input {
+  width: 100%;
+  padding: 14px;
+  background: #090909;
+  border: 1px solid #292929;
+  border-radius: 7px;
+  color: white;
+  outline: none;
+}
+
+.admin-panel input:focus {
+  border-color: #c6ff55;
+}
+
+.admin-submit {
+  padding: 15px;
+  margin-top: 15px;
+  background: #c6ff55;
+  color: #090909;
+  border: none;
+  border-radius: 7px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.admin-submit:hover {
+  background: #d8ff8b;
+}
+
+.admin-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 30px;
+}
+
+.logout-button {
+  padding: 12px 20px;
+  background: #292929;
+  border: 1px solid #444;
+  color: white;
+  border-radius: 7px;
+  cursor: pointer;
+}
+
+#loginMessage,
+#uploadMessage {
+  font-size: 13px;
+  color: #c6ff55;
+  margin-top: 10px;
+}
+
+.admin-song-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 15px;
+  padding: 15px 0;
+  border-bottom: 1px solid #292929;
+}
+
+.admin-song-item strong {
+  display: block;
+  font-size: 14px;
+}
+
+.admin-song-item small {
+  display: block;
+  color: #929292;
+  margin-top: 5px;
+}
+
+.delete-song {
+  padding: 9px 13px;
+  background: #381919;
+  color: #ff8585;
+  border: 0;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+@media(max-width:600px) {
+  .admin-container {
+    margin: 35px auto;
+    padding: 0 14px;
+  }
+
+  .admin-panel {
+    padding: 20px;
+  }
+
+  .admin-heading {
+    align-items: flex-start;
+  }
+}
