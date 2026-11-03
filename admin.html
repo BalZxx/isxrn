@@ -1,90 +1,152 @@
-
 <!DOCTYPE html>
 <html lang="id">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin - Store Ikbal Sopan</title>
-  <link rel="stylesheet" href="style.css">
+  <title>Admin Dashboard — Store Ikbal Sopan</title>
   <link rel="stylesheet" href="admin.css">
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="config.js"></script>
 </head>
-<body>
+<body class="admin-body">
 
-  <header class="navbar">
+  <header class="admin-topbar">
     <a href="index.html" class="brand">
-      <span class="brand-icon">IS</span>
-      <span>STORE <b>IKBAL SOPAN</b></span>
+      <span class="brand-mark">IS</span>
+      <span>STORE <strong>IKBAL SOPAN</strong></span>
     </a>
-    <a href="index.html" class="admin-link">LIHAT TOKO ↗</a>
+    <a href="index.html" class="back-link">← Lihat Toko</a>
   </header>
 
   <main class="admin-container">
 
-    <section id="loginSection" class="admin-panel">
-      <span class="eyebrow">PRIVATE ACCESS</span>
-      <h1>Admin Login</h1>
-      <p>Masuk untuk mengelola toko musik kamu.</p>
+    <!-- LOGIN -->
+    <section id="loginSection" class="admin-panel login-panel">
+      <div class="admin-eyebrow">STORE MANAGEMENT</div>
+      <h1>Selamat Datang</h1>
+      <p class="admin-subtitle">Masuk untuk mengelola katalog musik kamu.</p>
 
       <form id="loginForm">
-        <label>Email Admin</label>
+        <label for="email">Email Admin</label>
         <input id="email" type="email" placeholder="Email admin" required>
 
-        <label>Password</label>
-        <input id="password" type="password" placeholder="Password admin" required>
+        <label for="password">Password</label>
+        <input id="password" type="password" placeholder="Password" required>
 
-        <button type="submit" class="admin-submit">LOGIN SEKARANG</button>
-        <p id="loginMessage"></p>
+        <button type="submit" class="admin-primary-btn">Masuk Dashboard</button>
       </form>
+
+      <button type="button" id="forgotPasswordBtn" class="text-button">
+        Lupa password?
+      </button>
+
+      <p id="loginMessage" class="admin-message"></p>
     </section>
 
+    <!-- RESET PASSWORD -->
+    <section id="recoverySection" class="admin-panel login-panel" hidden>
+      <div class="admin-eyebrow">ACCOUNT RECOVERY</div>
+      <h1>Reset Password</h1>
+      <p class="admin-subtitle">Buat password baru untuk akun admin.</p>
+
+      <form id="recoveryForm">
+        <label for="newPassword">Password Baru</label>
+        <input id="newPassword" type="password"
+          placeholder="Minimal 6 karakter" minlength="6" required>
+
+        <label for="confirmPassword">Ulangi Password</label>
+        <input id="confirmPassword" type="password"
+          placeholder="Ulangi password baru" minlength="6" required>
+
+        <button type="submit" class="admin-primary-btn">
+          Simpan Password Baru
+        </button>
+      </form>
+
+      <p id="recoveryMessage" class="admin-message"></p>
+    </section>
+
+    <!-- DASHBOARD -->
     <section id="dashboardSection" hidden>
-      <div class="admin-heading">
+      <div class="dashboard-heading">
         <div>
-          <span class="eyebrow">STORE MANAGEMENT</span>
+          <div class="admin-eyebrow">CONTROL CENTER</div>
           <h1>Dashboard Admin</h1>
-          <p>Kelola koleksi musik Store Ikbal Sopan.</p>
+          <p class="admin-subtitle">Kelola semua musik di Store Ikbal Sopan.</p>
         </div>
-        <button id="logoutButton" class="logout-button">Logout</button>
+        <button id="logoutBtn" class="admin-logout-btn">Keluar</button>
       </div>
 
       <div class="admin-panel">
-        <h2>Tambah Musik</h2>
+        <h2 id="formTitle">Tambah Musik Baru</h2>
 
         <form id="songForm">
-          <label>Judul Lagu</label>
-          <input id="songTitle" required placeholder="Contoh: Kangen Kamu">
+          <input type="hidden" id="songId">
 
-          <label>Nama Artis</label>
-          <input id="songArtist" required placeholder="Nama artis">
+          <div class="admin-form-grid">
+            <div>
+              <label for="songTitle">Judul Lagu</label>
+              <input id="songTitle" type="text"
+                placeholder="Contoh: Coba Kamu" required>
+            </div>
 
-          <label>Harga (Rupiah)</label>
-          <input id="songPrice" type="number" min="0" required placeholder="50000">
+            <div>
+              <label for="songArtist">Nama Artis</label>
+              <input id="songArtist" type="text"
+                placeholder="Contoh: Ikbal Sopan" required>
+            </div>
 
-          <label>Cover Album</label>
-          <input id="songCover" type="file" accept="image/*" required>
+            <div>
+              <label for="songPrice">Harga (Rp)</label>
+              <input id="songPrice" type="number"
+                min="0" placeholder="15000" required>
+            </div>
 
-          <label>File Audio / Preview</label>
-          <input id="songAudio" type="file" accept="audio/*" required>
+            <div>
+              <label for="coverFile">Cover Lagu</label>
+              <input id="coverFile" type="file" accept="image/*">
+            </div>
 
-          <button type="submit" class="admin-submit">
-            SIMPAN MUSIK
-          </button>
+            <div class="full-width">
+              <label for="audioFile">Audio Preview</label>
+              <input id="audioFile" type="file" accept="audio/*">
+              <small>Gunakan audio preview, bukan file master lagu berbayar.</small>
+            </div>
+          </div>
 
-          <p id="uploadMessage"></p>
+          <div class="admin-form-actions">
+            <button type="submit" id="saveSongBtn" class="admin-primary-btn">
+              Simpan Musik
+            </button>
+            <button type="button" id="cancelEditBtn" class="admin-secondary-btn" hidden>
+              Batal Edit
+            </button>
+          </div>
+
+          <p id="adminMessage" class="admin-message"></p>
         </form>
       </div>
 
-      <div class="admin-panel">
-        <h2>Daftar Musik</h2>
-        <div id="adminSongList">Memuat musik...</div>
+      <div class="admin-panel song-management">
+        <div class="song-management-heading">
+          <div>
+            <h2>Katalog Musik</h2>
+            <p class="admin-subtitle">Daftar musik yang tersimpan.</p>
+          </div>
+          <button id="refreshSongsBtn" class="admin-secondary-btn">
+            ↻ Refresh
+          </button>
+        </div>
+
+        <div id="songsList">
+          <p class="loading">Memuat katalog musik...</p>
+        </div>
       </div>
     </section>
 
   </main>
 
-  <script src="config.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="admin.js"></script>
-
 </body>
 </html>
