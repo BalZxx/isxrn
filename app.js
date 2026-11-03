@@ -248,6 +248,7 @@ async function playSong(url, button) {
       try {
         await currentAudio.play();
         button.textContent = "❚❚ Pause";
+        showPersistentPlayer();
         syncPersistentButtons();
       } catch (error) {
         console.error(error);
@@ -284,6 +285,11 @@ async function playSong(url, button) {
   audio.addEventListener("durationchange", updateMusicControls);
   audio.addEventListener("timeupdate", updateMusicControls);
 
+  audio.addEventListener("play", () => {
+    showPersistentPlayer();
+    syncPersistentButtons();
+  });
+  audio.addEventListener("pause", syncPersistentButtons);
   audio.addEventListener("ended", resetPlayer);
 
   audio.addEventListener("error", () => {
@@ -394,19 +400,27 @@ function setupPersistentPlayer() {
   });
 }
 function showPersistentPlayer() {
-  if (!currentAudio || !currentCard) return;
+  if (!currentAudio) return;
   const mini = document.getElementById("isMiniPlayer");
-  if (!mini) return;
+  if (!mini) {
+    console.error("Mini-player tidak ditemukan di index.html");
+    return;
+  }
+
+  const song = currentSong || {};
+  const cover = currentCard && currentCard.querySelector("img");
+  const title = song.title || (currentCard && currentCard.querySelector("h3")?.textContent) || "Now Playing";
+  const artist = song.artist || (currentCard && currentCard.querySelector(".song-info p")?.textContent) || "Store Ikbal Sopan";
+  const image = song.cover_url || (cover && cover.src) || "";
+
   mini.hidden = false;
-  const cover = currentCard.querySelector("img");
-  const title = currentCard.querySelector("h3");
-  const artist = currentCard.querySelector(".song-info p");
-  document.getElementById("isMiniCover").src = cover ? cover.src : "";
-  document.getElementById("isFullCover").src = cover ? cover.src : "";
-  document.getElementById("isMiniTitle").textContent = title ? title.textContent : "Unknown";
-  document.getElementById("isFullTitle").textContent = title ? title.textContent : "Unknown";
-  document.getElementById("isMiniArtist").textContent = artist ? artist.textContent : "";
-  document.getElementById("isFullArtist").textContent = artist ? artist.textContent : "";
+  mini.style.display = "flex";
+  document.getElementById("isMiniCover").src = image;
+  document.getElementById("isFullCover").src = image;
+  document.getElementById("isMiniTitle").textContent = title;
+  document.getElementById("isFullTitle").textContent = title;
+  document.getElementById("isMiniArtist").textContent = artist;
+  document.getElementById("isFullArtist").textContent = artist;
   document.getElementById("isFullPlayer").hidden = true;
   document.body.classList.remove("is-player-open");
   updatePersistentPlayer();
