@@ -4,6 +4,9 @@ const PHONE = CONFIG.WHATSAPP_NUMBER || "6283148451522";
 
 let songs = [];
 let currentAudio = null;
+let currentButton = null;
+let currentCard = null;
+let isSeeking = false;
 
 const songList = document.getElementById("songList");
 const searchInput = document.getElementById("searchInput");
@@ -17,6 +20,41 @@ function rupiah(value) {
   }).format(Number(value) || 0);
 }
 
+function escapeHTML(value) {
+  return String(value).replace(/[&<>"']/g, char => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#39;"
+  })[char]);
+}
+
+function escapeJS(value) {
+  return String(value)
+    .replace(/\\/g, "\\\\")
+    .replace(/'/g, "\\'")
+    .replace(/"/g, "&quot;")
+    .replace(/\n/g, "");
+}
+
+function formatTime(seconds) {
+  if (!Number.isFinite(seconds)) return "0:00";
+  const minutes = Math.floor(seconds / 60);
+  const secs = Math.floor(seconds % 60);
+  return `${minutes}:${String(secs).padStart(2, "0")}`;
+}
+
+function buyLink(song) {
+  const message =
+    `Halo Store Ikbal Sopan, saya ingin membeli musik:\n` +
+    `Judul: ${song.title}\n` +
+    `Artis: ${song.artist}\n` +
+    `Harga: ${rupiah(song.price)}`;
+
+  return `https://wa.me/${PHONE}?text=${encodeURIComponent(message)}`;
+}
+
 function renderSongs(keyword = "") {
   const filtered = songs.filter(song =>
     `${song.title} ${song.artist}`
@@ -24,13 +62,11 @@ function renderSongs(keyword = "") {
       .includes(keyword.toLowerCase())
   );
 
-  musicCount.textContent = `${filtered.length} MUSIK`;
+  musicCount.textContent = `${filtered.length}`;
 
   if (!filtered.length) {
-    songList.innerHTML = `
-      <div class="empty">
-        Belum ada musik ditemukan.
-      </div>`;
+    songList.innerHTML =
+      `<div class="empty">Belum ada musik ditemukan.</div>`;
     return;
   }
 
@@ -44,13 +80,42 @@ function renderSongs(keyword = "") {
     return `
       <article class="song-card">
         <img src="${escapeHTML(cover)}"
-             alt="${title}"
-             onerror="this.src='https://placehold.co/500x500/191919/c6ff55?text=STORE+IS'">
+          alt="${title}"
+          onerror="this.src='https://placehold.co/500x500/191919/c6ff55?text=STORE+IS'">
 
         <div class="song-info">
           <h3>${title}</h3>
           <p>${artist}</p>
           <div class="song-price">${price}</div>
+
+          <div class="playback-controls"
+            style="margin:14px 0;padding:12px;background:#171717;border-radius:12px;">
+
+            <input type="range"
+              class="seek-bar"
+              min="0"
+              max="100"
+              value="0"
+              step="0.1"
+              oninput="seekSong(this)"
+              style="width:100%;accent-color:#c6ff55;cursor:pointer;">
+
+            <div style="display:flex;justify-content:space-between;font-size:12px;color:#aaa;margin-top:5px;">
+              <span class="current-time">0:00</span>
+              <span class="duration-time">0:00</span>
+            </div>
+
+            <select class="speed-control"
+              onchange="changePlaybackRate(this)"
+              style="margin-top:10px;padding:7px 10px;background:#242424;color:#c6ff55;border:1px solid #444;border-radius:7px;">
+              <option value="0.5">0.5x</option>
+              <option value="0.75">0.75x</option>
+              <option value="1" selected>1x Normal</option>
+              <option value="1.25">1.25x</option>
+              <option value="1.5">1.5x</option>
+              <option value="2">2x</option>
+            </select>
+          </div>
 
           <div class="song-actions">
             <button class="play-button"
@@ -70,82 +135,134 @@ function renderSongs(keyword = "") {
   }).join("");
 }
 
-function escapeHTML(value) {
-  return String(value).replace(/[&<>"']/g, char => ({
-    "&": "&amp;",
-    "<": "&lt;",
-    ">": "&gt;",
-    '"': "&quot;",
-    "'": "&#39;"
-  })[char]);
+function seekSong(slider) {
+  if (!currentAudio || !currentCard) return;
+  if (slider.closest(".song-card") !== currentCard) return;
+  if (!Number.isFinite(currentAudio.duration)) return;
+
+  currentAudio.currentTime =
+    (Number(slider.value) / 100) * currentAudio.duration;
 }
 
-function escapeJS(value) {
-  return String(value).replace(/\\/g, "\\\\")
-    .replace(/'/g, "\\'")
-    .replace(/"/g, "&quot;")
-    .replace(/\n/g, "");
+function changePlaybackRate(select) {
+  if (!currentAudio || !currentCard) return;
+  if (select.closest(".song-card") !== currentCard) return;
+
+  currentAudio.playbackRate = Number(select.value);
 }
 
-function buyLink(song) {
-  const message =
-    `Halo Store Ikbal Sopan, saya ingin membeli musik:\n` +
-    `Judul: ${song.title}\n` +
-    `Artis: ${song.artist}\n` +
-    `Harga: ${rupiah(song.price)}`;
+function updatePlaybackControls() {
+  if (!currentAudio || !currentCard) return;
 
-  return `https://wa.me/${PHONE}?text=${encodeURIComponent(message)}`;
+  const slider = currentCard.querySelector(".seek-bar");
+  const currentTime = currentCard.querySelector(".current-time");
+  const durationTime = currentCard.querySelector(".duration-time");
+
+  if (!slider || !currentTime || !durationTime) return;
+
+  const duration = currentAudio.duration || 0;
+  const position = currentAudio.currentTime || 0;
+
+  if (!isSeeking) {
+    slider.value = duration
+      ? (position / duration) * 100
+      : 0;
+  }
+
+  currentTime.textContent = formatTime(position);
+  durationTime.textContent = formatTime(duration);
 }
 
-function playSong(url, button) {
+function resetPlayer() {
+  if (currentButton) {
+    currentButton.textContent = "▶ Preview";
+  }
+
+  if (currentCard) {
+    const slider = currentCard.querySelector(".seek-bar");
+    const currentTime = currentCard.querySelector(".current-time");
+
+    if (slider) slider.value = 0;
+    if (currentTime) currentTime.textContent = "0:00";
+  }
+
+  currentAudio = null;
+  currentButton = null;
+  currentCard = null;
+}
+
+async function playSong(url, button) {
   if (!url) {
     alert("Preview musik belum tersedia.");
     return;
   }
 
+  if (currentAudio && currentButton === button) {
+    if (currentAudio.paused) {
+      try {
+        await currentAudio.play();
+        button.textContent = "❚❚ Pause";
+      } catch (error) {
+        alert("Musik tidak dapat dilanjutkan.");
+      }
+    } else {
+      currentAudio.pause();
+      button.textContent = "▶ Preview";
+    }
+    return;
+  }
+
   if (currentAudio) {
     currentAudio.pause();
-    currentAudio = null;
+    currentAudio.src = "";
+    resetPlayer();
   }
 
   document.querySelectorAll(".play-button").forEach(btn => {
     btn.textContent = "▶ Preview";
   });
 
-  const audio = new Audio(url);
-  currentAudio = audio;
+  const audio = new Audio();
+  audio.preload = "metadata";
+  audio.src = url;
 
-  audio.play().then(() => {
-    button.textContent = "❚❚ Pause";
-  }).catch(() => {
-    alert("Musik tidak dapat diputar.");
+  currentAudio = audio;
+  currentButton = button;
+  currentCard = button.closest(".song-card");
+
+  audio.addEventListener("loadedmetadata", updatePlaybackControls);
+  audio.addEventListener("durationchange", updatePlaybackControls);
+  audio.addEventListener("timeupdate", updatePlaybackControls);
+
+  audio.addEventListener("ended", resetPlayer);
+
+  audio.addEventListener("error", () => {
+    alert("Preview tidak dapat diputar. Periksa file audio dan koneksi.");
+    resetPlayer();
   });
 
-  audio.onended = () => {
-    button.textContent = "▶ Preview";
-    currentAudio = null;
-  };
-
-  button.onclick = () => {
-    if (audio.paused) {
-      audio.play();
-      button.textContent = "❚❚ Pause";
-    } else {
-      audio.pause();
-      button.textContent = "▶ Preview";
-    }
-  };
+  try {
+    await audio.play();
+    button.textContent = "❚❚ Pause";
+  } catch (error) {
+    console.error("Audio error:", error);
+    alert("Preview tidak dapat diputar. Periksa file audio dan koneksi.");
+    resetPlayer();
+  }
 }
 
 async function loadSongs() {
-  if (!window.supabase || !CONFIG.SUPABASE_URL ||
-      !CONFIG.SUPABASE_ANON_KEY ||
-      CONFIG.SUPABASE_URL.includes("ISI_")) {
+  if (
+    !window.supabase ||
+    !CONFIG.SUPABASE_URL ||
+    !CONFIG.SUPABASE_ANON_KEY ||
+    CONFIG.SUPABASE_URL.includes("ISI_")
+  ) {
     songList.innerHTML = `
       <div class="empty">
         Katalog sedang menunggu koneksi database.
       </div>`;
-    musicCount.textContent = "0 MUSIK";
+    musicCount.textContent = "0";
     return;
   }
 
@@ -165,6 +282,7 @@ async function loadSongs() {
 
     songs = data || [];
     renderSongs(searchInput.value);
+
   } catch (error) {
     console.error(error);
     songList.innerHTML = `
@@ -175,6 +293,12 @@ async function loadSongs() {
 }
 
 searchInput.addEventListener("input", event => {
+  if (currentAudio) {
+    currentAudio.pause();
+    currentAudio.src = "";
+    resetPlayer();
+  }
+
   renderSongs(event.target.value);
 });
 
