@@ -206,6 +206,7 @@ function updateMusicControls() {
 
   now.textContent = formatMusicTime(position);
   total.textContent = formatMusicTime(duration);
+  updatePersistentPlayer();
 }
 
 // MENGHENTIKAN PEMUTAR
@@ -225,6 +226,12 @@ function resetPlayer() {
   currentAudio = null;
   currentButton = null;
   currentCard = null;
+  currentSong = null;
+  const mini = document.getElementById("isMiniPlayer");
+  const full = document.getElementById("isFullPlayer");
+  if (mini) mini.hidden = true;
+  if (full) full.hidden = true;
+  document.body.classList.remove("is-player-open");
 }
 
 // PUTAR / PAUSE MUSIK
@@ -240,6 +247,7 @@ async function playSong(url, button) {
       try {
         await currentAudio.play();
         button.textContent = "❚❚ Pause";
+        syncPersistentButtons();
       } catch (error) {
         console.error(error);
         alert("Musik tidak dapat dilanjutkan.");
@@ -247,6 +255,7 @@ async function playSong(url, button) {
     } else {
       currentAudio.pause();
       button.textContent = "▶ Preview";
+      syncPersistentButtons();
     }
     return;
   }
@@ -268,6 +277,7 @@ async function playSong(url, button) {
   currentAudio = audio;
   currentButton = button;
   currentCard = button.closest(".song-card");
+  currentSong = songs.find(song => (song.preview_url || song.audio_url || "") === url) || null;
 
   audio.addEventListener("loadedmetadata", updateMusicControls);
   audio.addEventListener("durationchange", updateMusicControls);
@@ -284,6 +294,7 @@ async function playSong(url, button) {
   try {
     await audio.play();
     button.textContent = "❚❚ Pause";
+    showPersistentPlayer();
   } catch (error) {
     console.error("Audio error:", error);
     alert("Preview tidak dapat diputar. Periksa file audio dan koneksi.");
@@ -345,5 +356,101 @@ searchInput.addEventListener("input", event => {
   renderSongs(event.target.value);
 });
 
+
+function setupPersistentPlayer() {
+  const mini = document.getElementById("isMiniPlayer");
+  if (!mini || mini.dataset.ready) return;
+  mini.dataset.ready = "1";
+  document.getElementById("isExpandPlayer").addEventListener("click", () => {
+    if (!currentAudio) return;
+    document.getElementById("isFullPlayer").hidden = false;
+    document.body.classList.add("is-player-open");
+  });
+  document.getElementById("isClosePlayer").addEventListener("click", () => {
+    document.getElementById("isFullPlayer").hidden = true;
+    document.body.classList.remove("is-player-open");
+  });
+  document.getElementById("isMiniPlay").addEventListener("click", togglePersistentPlayback);
+  document.getElementById("isFullPlay").addEventListener("click", togglePersistentPlayback);
+  document.getElementById("isMiniNext").addEventListener("click", () => changeTrack(1));
+  document.getElementById("isNext").addEventListener("click", () => changeTrack(1));
+  document.getElementById("isPrev").addEventListener("click", () => changeTrack(-1));
+  document.getElementById("isFullSeek").addEventListener("input", e => {
+    if (currentAudio && Number.isFinite(currentAudio.duration)) {
+      currentAudio.currentTime = Number(e.target.value) / 100 * currentAudio.duration;
+      updatePersistentPlayer();
+    }
+  });
+  document.getElementById("isFullSpeed").addEventListener("change", e => {
+    if (currentAudio) currentAudio.playbackRate = Number(e.target.value);
+    if (currentCard) {
+      const select = currentCard.querySelector(".speed-control");
+      if (select) select.value = e.target.value;
+    }
+  });
+  document.getElementById("isFullVolume").addEventListener("input", e => {
+    if (currentAudio) currentAudio.volume = Number(e.target.value);
+  });
+}
+function showPersistentPlayer() {
+  if (!currentAudio || !currentCard) return;
+  const mini = document.getElementById("isMiniPlayer");
+  if (!mini) return;
+  mini.hidden = false;
+  const cover = currentCard.querySelector("img");
+  const title = currentCard.querySelector("h3");
+  const artist = currentCard.querySelector(".song-info p");
+  document.getElementById("isMiniCover").src = cover ? cover.src : "";
+  document.getElementById("isFullCover").src = cover ? cover.src : "";
+  document.getElementById("isMiniTitle").textContent = title ? title.textContent : "Unknown";
+  document.getElementById("isFullTitle").textContent = title ? title.textContent : "Unknown";
+  document.getElementById("isMiniArtist").textContent = artist ? artist.textContent : "";
+  document.getElementById("isFullArtist").textContent = artist ? artist.textContent : "";
+  document.getElementById("isFullPlayer").hidden = false;
+  document.body.classList.add("is-player-open");
+  updatePersistentPlayer();
+}
+function updatePersistentPlayer() {
+  if (!currentAudio) return;
+  const duration = currentAudio.duration || 0;
+  const current = currentAudio.currentTime || 0;
+  const percent = duration ? current / duration * 100 : 0;
+  document.getElementById("isMiniProgress").style.width = percent + "%";
+  document.getElementById("isFullSeek").value = percent;
+  document.getElementById("isFullCurrent").textContent = formatMusicTime(current);
+  document.getElementById("isFullDuration").textContent = formatMusicTime(duration);
+  document.getElementById("isFullSpeed").value = String(currentAudio.playbackRate || 1);
+  syncPersistentButtons();
+}
+function syncPersistentButtons() {
+  if (!currentAudio) return;
+  const paused = currentAudio.paused;
+  document.getElementById("isMiniPlay").textContent = paused ? "▶" : "Ⅱ";
+  document.getElementById("isFullPlay").textContent = paused ? "▶" : "Ⅱ";
+  document.getElementById("isWave").classList.toggle("is-playing", !paused);
+}
+async function togglePersistentPlayback() {
+  if (!currentAudio) return;
+  if (currentAudio.paused) {
+    try {
+      await currentAudio.play();
+      if (currentButton) currentButton.textContent = "❚❚ Pause";
+    } catch (error) { console.error(error); }
+  } else {
+    currentAudio.pause();
+    if (currentButton) currentButton.textContent = "▶ Preview";
+  }
+  syncPersistentButtons();
+}
+function changeTrack(direction) {
+  if (!currentSong || !songs.length) return;
+  const index = songs.indexOf(currentSong);
+  const next = (index + direction + songs.length) % songs.length;
+  const card = document.querySelector('.song-card[data-song-index="' + next + '"]');
+  const button = card && card.querySelector(".play-button");
+  if (button) playSong(songs[next].preview_url || songs[next].audio_url || "", button);
+}
+
 // JALANKAN KATALOG
+setupPersistentPlayer();
 loadSongs();
