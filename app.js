@@ -407,8 +407,8 @@ function showPersistentPlayer() {
   document.getElementById("isFullTitle").textContent = title ? title.textContent : "Unknown";
   document.getElementById("isMiniArtist").textContent = artist ? artist.textContent : "";
   document.getElementById("isFullArtist").textContent = artist ? artist.textContent : "";
-  document.getElementById("isFullPlayer").hidden = false;
-  document.body.classList.add("is-player-open");
+  document.getElementById("isFullPlayer").hidden = true;
+  document.body.classList.remove("is-player-open");
   updatePersistentPlayer();
 }
 function updatePersistentPlayer() {
