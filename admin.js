@@ -1,306 +1,187 @@
-const supabaseClient = window.supabase.createClient(
-  window.STORE_CONFIG.SUPABASE_URL,
-  window.STORE_CONFIG.SUPABASE_ANON_KEY,
-  {
-    auth: {
-      persistSession: true,
-      autoRefreshToken: true,
-      detectSessionInUrl: true,
-      storage: window.localStorage,
-      storageKey: "store-ikbal-sopan-admin-session"
-    }
-  }
+
+const CONFIG = window.STORE_CONFIG || {};
+const client = window.supabase.createClient(
+  CONFIG.SUPABASE_URL,
+  CONFIG.SUPABASE_ANON_KEY
 );
 
-const $ = (id) => document.getElementById(id);
+const loginSection = document.getElementById("loginSection");
+const dashboardSection = document.getElementById("dashboardSection");
+const loginForm = document.getElementById("loginForm");
+const songForm = document.getElementById("songForm");
+const loginMessage = document.getElementById("loginMessage");
+const uploadMessage = document.getElementById("uploadMessage");
+const adminSongList = document.getElementById("adminSongList");
 
-const loginSection = $("loginSection");
-const dashboardSection = $("dashboardSection");
-const recoverySection = $("recoverySection");
+let editingId = null;
 
-let currentSession = null;
-
-function showMessage(id, message) {
-  $(id).textContent = message;
+function message(element, text) {
+  element.textContent = text;
 }
 
-function showLogin() {
-  loginSection.hidden = false;
-  dashboardSection.hidden = true;
-  recoverySection.hidden = true;
+function rupiah(value) {
+  return new Intl.NumberFormat("id-ID", {
+    style: "currency",
+    currency: "IDR",
+    maximumFractionDigits: 0
+  }).format(Number(value) || 0);
 }
 
-function showDashboard() {
-  loginSection.hidden = true;
-  dashboardSection.hidden = false;
-  recoverySection.hidden = true;
-  loadSongs();
+function showDashboard(loggedIn) {
+  loginSection.hidden = loggedIn;
+  dashboardSection.hidden = !loggedIn;
 }
 
-// LOGIN
-$("loginForm").addEventListener("submit", async (event) => {
+async function checkLogin() {
+  const { data } = await client.auth.getSession();
+
+  if (data.session) {
+    showDashboard(true);
+    loadAdminSongs();
+  } else {
+    showDashboard(false);
+  }
+}
+
+loginForm.addEventListener("submit", async event => {
   event.preventDefault();
 
-  const email = $("email").value.trim();
-  const password = $("password").value;
+  message(loginMessage, "Sedang login...");
 
-  showMessage("loginMessage", "Sedang masuk...");
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
 
-  const { data, error } = await supabaseClient.auth.signInWithPassword({
+  const { error } = await client.auth.signInWithPassword({
     email,
     password
   });
 
   if (error) {
-    showMessage("loginMessage", "Gagal masuk: " + error.message);
+    message(loginMessage, "Login gagal: " + error.message);
     return;
   }
 
-  currentSession = data.session;
-  showDashboard();
+  message(loginMessage, "Login berhasil!");
+  showDashboard(true);
+  loadAdminSongs();
 });
 
-// LUPA PASSWORD
-$("forgotPasswordBtn").addEventListener("click", async () => {
-  const email = $("email").value.trim();
-
-  if (!email) {
-    showMessage("loginMessage", "Masukkan email admin terlebih dahulu.");
-    $("email").focus();
-    return;
-  }
-
-  showMessage("loginMessage", "Mengirim email pemulihan...");
-
-  const { error } = await supabaseClient.auth.resetPasswordForEmail(email);
-
-  if (error) {
-    showMessage("loginMessage", "Gagal: " + error.message);
-    return;
-  }
-
-  showMessage(
-    "loginMessage",
-    "Email pemulihan sudah diminta. Periksa kotak masuk atau folder spam."
-  );
+document.getElementById("logoutButton").addEventListener("click", async () => {
+  await client.auth.signOut();
+  showDashboard(false);
 });
 
-// DETEKSI RESET PASSWORD
-supabaseClient.auth.onAuthStateChange((event, session) => {
-  if (event === "PASSWORD_RECOVERY") {
-    loginSection.hidden = true;
-    dashboardSection.hidden = true;
-    recoverySection.hidden = false;
-  }
-});
+async function loadAdminSongs() {
+  adminSongList.textContent = "Memuat musik...";
 
-// SIMPAN PASSWORD BARU
-$("recoveryForm").addEventListener("submit", async (event) => {
-  event.preventDefault();
-
-  const password = $("newPassword").value;
-  const confirmation = $("confirmPassword").value;
-
-  if (password.length < 6) {
-    showMessage("recoveryMessage", "Password minimal 6 karakter.");
-    return;
-  }
-
-  if (password !== confirmation) {
-    showMessage("recoveryMessage", "Konfirmasi password tidak cocok.");
-    return;
-  }
-
-  showMessage("recoveryMessage", "Menyimpan password...");
-
-  const { error } = await supabaseClient.auth.updateUser({
-    password
-  });
-
-  if (error) {
-    showMessage("recoveryMessage", "Gagal: " + error.message);
-    return;
-  }
-
-  await supabaseClient.auth.signOut();
-  showMessage("recoveryMessage", "Password berhasil diubah. Silakan login kembali.");
-  $("recoveryForm").reset();
-});
-
-// UPLOAD FILE
-async function uploadFile(file, bucket) {
-  if (!file) return null;
-
-  const extension = file.name.split(".").pop().toLowerCase();
-  const fileName =
-    Date.now() + "-" + Math.random().toString(36).slice(2) + "." + extension;
-
-  const { error } = await supabaseClient.storage
-    .from(bucket)
-    .upload(fileName, file, {
-      cacheControl: "3600",
-      upsert: false
-    });
-
-  if (error) throw error;
-
-  const { data } = supabaseClient.storage
-    .from(bucket)
-    .getPublicUrl(fileName);
-
-  return data.publicUrl;
-}
-
-// TAMBAH / EDIT LAGU
-$("songForm").addEventListener("submit", async (event) => {
-  event.preventDefault();
-
-  const id = $("songId").value;
-  const title = $("songTitle").value.trim();
-  const artist = $("songArtist").value.trim();
-  const price = Number($("songPrice").value);
-  const coverFile = $("coverFile").files[0];
-  const audioFile = $("audioFile").files[0];
-
-  if (!Number.isFinite(price) || price < 0) {
-    showMessage("adminMessage", "Harga tidak valid.");
-    return;
-  }
-
-  const saveButton = $("saveSongBtn");
-  saveButton.disabled = true;
-  saveButton.textContent = "Menyimpan...";
-
-  try {
-    const songData = {
-      title,
-      artist,
-      price,
-      is_active: true
-    };
-
-    if (coverFile) {
-      songData.cover_url = await uploadFile(coverFile, "covers");
-    }
-
-    if (audioFile) {
-      // Hanya untuk audio preview, jangan unggah master lagu berbayar.
-      songData.preview_url = await uploadFile(audioFile, "music");
-      songData.audio_url = songData.preview_url;
-    }
-
-    let result;
-
-    if (id) {
-      result = await supabaseClient
-        .from("songs")
-        .update(songData)
-        .eq("id", id);
-    } else {
-      result = await supabaseClient
-        .from("songs")
-        .insert(songData);
-    }
-
-    if (result.error) throw result.error;
-
-    showMessage("adminMessage", id
-      ? "Musik berhasil diperbarui!"
-      : "Musik berhasil ditambahkan!"
-    );
-
-    resetSongForm();
-    await loadSongs();
-
-  } catch (error) {
-    showMessage("adminMessage", "Gagal menyimpan: " + error.message);
-  } finally {
-    saveButton.disabled = false;
-    saveButton.textContent = "Simpan Musik";
-  }
-});
-
-// TAMPILKAN DAFTAR LAGU
-async function loadSongs() {
-  $("songsList").innerHTML = '<p class="loading">Memuat katalog musik...</p>';
-
-  const { data, error } = await supabaseClient
+  const { data, error } = await client
     .from("songs")
     .select("*")
     .order("created_at", { ascending: false });
 
   if (error) {
-    $("songsList").innerHTML =
-      '<p class="empty">Gagal memuat: ' + error.message + '</p>';
+    adminSongList.textContent = "Gagal memuat: " + error.message;
     return;
   }
 
-  if (!data || data.length === 0) {
-    $("songsList").innerHTML =
-      '<p class="empty">Belum ada musik. Tambahkan lagu pertamamu!</p>';
+  if (!data.length) {
+    adminSongList.textContent = "Belum ada musik.";
     return;
   }
 
-  $("songsList").innerHTML = "";
-
-  data.forEach((song) => {
-    const item = document.createElement("div");
-    item.className = "admin-song-item";
-
-    const cover = document.createElement("img");
-    cover.src = song.cover_url || "";
-    cover.alt = "Cover " + song.title;
-
-    const info = document.createElement("div");
-    info.className = "admin-song-info";
-
-    const title = document.createElement("strong");
-    title.textContent = song.title;
-
-    const details = document.createElement("span");
-    details.textContent =
-      song.artist + " • Rp" + Number(song.price).toLocaleString("id-ID");
-
-    info.append(title, details);
-
-    const actions = document.createElement("div");
-    actions.className = "admin-song-actions";
-
-    const editButton = document.createElement("button");
-    editButton.textContent = "Edit";
-    editButton.addEventListener("click", () => editSong(song));
-
-    const deleteButton = document.createElement("button");
-    deleteButton.textContent = "Hapus";
-    deleteButton.className = "delete-song";
-    deleteButton.addEventListener("click", () => deleteSong(song.id));
-
-    actions.append(editButton, deleteButton);
-    item.append(cover, info, actions);
-
-    $("songsList").appendChild(item);
-  });
+  adminSongList.innerHTML = data.map(song => `
+    <div class="admin-song-item">
+      <div>
+        <strong>${escapeHTML(song.title)}</strong>
+        <small>${escapeHTML(song.artist)} · ${rupiah(song.price)}</small>
+        <small>${song.is_active ? "Aktif" : "Nonaktif"}</small>
+      </div>
+      <div>
+        <button class="delete-song"
+          onclick="deleteSong('${song.id}')">Hapus</button>
+      </div>
+    </div>
+  `).join("");
 }
 
-// EDIT LAGU
-function editSong(song) {
-  $("songId").value = song.id;
-  $("songTitle").value = song.title;
-  $("songArtist").value = song.artist;
-  $("songPrice").value = song.price;
-
-  $("formTitle").textContent = "Edit Musik";
-  $("saveSongBtn").textContent = "Simpan Perubahan";
-  $("cancelEditBtn").hidden = false;
-
-  window.scrollTo({ top: 0, behavior: "smooth" });
+function escapeHTML(value) {
+  return String(value || "").replace(/[&<>"']/g, char => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#39;"
+  })[char]);
 }
 
-// HAPUS LAGU
+async function uploadFile(file, bucket) {
+  if (!file) throw new Error("File belum dipilih.");
+
+  const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
+  const path = `${Date.now()}-${safeName}`;
+
+  const { error } = await client.storage
+    .from(bucket)
+    .upload(path, file);
+
+  if (error) throw error;
+
+  const { data } = client.storage
+    .from(bucket)
+    .getPublicUrl(path);
+
+  return data.publicUrl;
+}
+
+songForm.addEventListener("submit", async event => {
+  event.preventDefault();
+
+  const submitButton = songForm.querySelector("button[type='submit']");
+  submitButton.disabled = true;
+
+  try {
+    message(uploadMessage, "Mengunggah cover dan audio...");
+
+    const title = document.getElementById("songTitle").value.trim();
+    const artist = document.getElementById("songArtist").value.trim();
+    const price = Number(document.getElementById("songPrice").value);
+    const coverFile = document.getElementById("songCover").files[0];
+    const audioFile = document.getElementById("songAudio").files[0];
+
+    if (!title || !artist || !Number.isFinite(price) || price < 0) {
+      throw new Error("Periksa judul, artis, dan harga.");
+    }
+
+    const coverUrl = await uploadFile(coverFile, "covers");
+    const audioUrl = await uploadFile(audioFile, "music");
+
+    const { error } = await client.from("songs").insert({
+      title,
+      artist,
+      price,
+      cover_url: coverUrl,
+      audio_url: audioUrl,
+      preview_url: audioUrl,
+      is_active: true
+    });
+
+    if (error) throw error;
+
+    songForm.reset();
+    message(uploadMessage, "Musik berhasil ditambahkan!");
+    await loadAdminSongs();
+
+  } catch (error) {
+    message(uploadMessage, "Gagal: " + error.message);
+  } finally {
+    submitButton.disabled = false;
+  }
+});
+
 async function deleteSong(id) {
   if (!confirm("Yakin ingin menghapus musik ini?")) return;
 
-  const { error } = await supabaseClient
+  const { error } = await client
     .from("songs")
     .delete()
     .eq("id", id);
@@ -311,38 +192,7 @@ async function deleteSong(id) {
   }
 
   alert("Musik berhasil dihapus.");
-  loadSongs();
+  loadAdminSongs();
 }
 
-// RESET FORM
-function resetSongForm() {
-  $("songForm").reset();
-  $("songId").value = "";
-  $("formTitle").textContent = "Tambah Musik Baru";
-  $("saveSongBtn").textContent = "Simpan Musik";
-  $("cancelEditBtn").hidden = true;
-}
-
-$("cancelEditBtn").addEventListener("click", resetSongForm);
-$("refreshSongsBtn").addEventListener("click", loadSongs);
-
-// LOGOUT
-$("logoutBtn").addEventListener("click", async () => {
-  await supabaseClient.auth.signOut();
-  currentSession = null;
-  showLogin();
-});
-
-// CEK LOGIN SAAT HALAMAN DIBUKA
-async function initializeAdmin() {
-  const { data } = await supabaseClient.auth.getSession();
-
-  if (data.session) {
-    currentSession = data.session;
-    showDashboard();
-  } else {
-    showLogin();
-  }
-}
-
-initializeAdmin();
+checkLogin();
