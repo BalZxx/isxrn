@@ -50,6 +50,7 @@ function buyLink(song) {
   return `https://wa.me/${PHONE}?text=${encodeURIComponent(message)}`;
 }
 
+
 function renderSongs(keyword = "") {
   const filtered = songs.filter(song =>
     `${song.title} ${song.artist}`
@@ -57,7 +58,7 @@ function renderSongs(keyword = "") {
       .includes(keyword.toLowerCase())
   );
 
-  musicCount.textContent = `${filtered.length}`;
+  musicCount.textContent = `${filtered.length} MUSIK`;
 
   if (!filtered.length) {
     songList.innerHTML = `
