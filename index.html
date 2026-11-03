@@ -3,68 +3,124 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#090909">
-  <meta name="description" content="Store Ikbal Sopan - Toko musik digital.">
-  <title>Store Ikbal Sopan</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#080909">
+  <title>Store Ikbal Sopan — Music Store</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-  <header class="navbar">
-    <a href="index.html" class="brand">
-      <span class="brand-icon">IS</span>
-      <span>STORE <b>IKBAL SOPAN</b></span>
-    </a>
-    <a class="admin-link" href="admin.html">ADMIN ↗</a>
-  </header>
+<header class="navbar">
+  <a href="#" class="brand">
+    <span class="brand-icon">IS.</span>
+    <span>IKBAL <b>SOPAN</b></span>
+  </a>
+  <nav>
+    <a href="#home">Home</a>
+    <a href="#katalog">Music</a>
+    <a href="#about">About</a>
+  </nav>
+  <a href="admin.html" class="admin-link">ADMIN ↗</a>
+</header>
 
-  <main>
-    <section class="hero">
-      <div class="hero-label">✦ DIGITAL MUSIC STORE</div>
-      <h1>Temukan Musik<br><span>Favoritmu.</span></h1>
-      <p>Koleksi musik digital dari Ikbal Sopan dan berbagai artis lainnya.</p>
-      <a href="#katalog" class="hero-button">JELAJAHI MUSIK ↓</a>
-      <div class="hero-decoration">IS.</div>
-    </section>
-
-    <section class="catalog" id="katalog">
-      <div class="section-heading">
-        <div>
-          <span class="eyebrow">OUR COLLECTION</span>
-          <h2>Katalog Musik</h2>
-        </div>
-        <span class="music-count" id="musicCount">0 MUSIK</span>
+<main>
+  <section class="hero" id="home">
+    <div class="hero-content">
+      <div class="hero-label">
+        <span class="live-dot"></span>
+        INDEPENDENT MUSIC STORE
       </div>
+      <h1>FEEL THE<br><span>REAL MUSIC.</span></h1>
+      <p>
+        Temukan koleksi musik pilihan dan karya terbaik
+        dari Ikbal Sopan serta berbagai artis lainnya.
+      </p>
+      <div class="hero-buttons">
+        <a href="#katalog" class="hero-button">EXPLORE MUSIC ↗</a>
+        <span class="hero-note">YOUR MUSIC. YOUR MOMENT.</span>
+      </div>
+    </div>
 
+    <div class="hero-art">
+      <div class="art-circle"></div>
+      <div class="art-card">
+        <div class="art-top">IS MUSIC LABEL</div>
+        <div class="art-logo">IS<span>.</span></div>
+        <div class="art-bottom">SOUND WITHOUT LIMITS</div>
+      </div>
+      <div class="floating-tag">✦ PREMIUM SOUND</div>
+    </div>
+
+    <div class="hero-bottom">
+      <span>SCROLL TO DISCOVER</span>
+      <span>EST. 2026 — INDONESIA</span>
+    </div>
+  </section>
+
+  <section class="features">
+    <div><strong>01</strong><span>PREMIUM MUSIC</span></div>
+    <div><strong>02</strong><span>INSTANT WHATSAPP ORDER</span></div>
+    <div><strong>03</strong><span>SUPPORT LOCAL ARTISTS</span></div>
+  </section>
+
+  <section class="catalog" id="katalog">
+    <div class="catalog-heading">
+      <div>
+        <span class="eyebrow">DISCOVER YOUR SOUND</span>
+        <h2>Explore <span>Music.</span></h2>
+        <p>Pilih lagu favoritmu dan nikmati karya terbaik.</p>
+      </div>
+      <div class="catalog-count">
+        <strong id="musicCount">0</strong>
+        <span>TRACKS</span>
+      </div>
+    </div>
+
+    <div class="catalog-tools">
       <div class="search-box">
         <span>⌕</span>
         <input id="searchInput" type="search"
-          placeholder="Cari judul atau nama artis...">
+          placeholder="Cari judul lagu atau artis...">
       </div>
-
-      <div id="songList" class="song-grid">
-        <div class="loading">Memuat katalog musik...</div>
-      </div>
-    </section>
-
-    <section class="about">
-      <span class="eyebrow">ABOUT OUR STORE</span>
-      <h2>Music is our<br><span>language.</span></h2>
-      <p>Terima kasih telah mendukung karya musik kami.</p>
-    </section>
-  </main>
-
-  <footer>
-    <div class="brand">
-      <span class="brand-icon">IS</span>
-      <span>STORE <b>IKBAL SOPAN</b></span>
+      <span class="sort-label">LATEST RELEASES ↓</span>
     </div>
-    <p>© 2026 Store Ikbal Sopan. All rights reserved.</p>
-  </footer>
 
-  <script src="config.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="app.js"></script>
+    <div id="songList" class="song-grid">
+      <div class="loading">Memuat koleksi musik...</div>
+    </div>
+  </section>
+
+  <section class="about" id="about">
+    <div class="about-mark">IS.</div>
+    <div>
+      <span class="eyebrow">MORE THAN JUST MUSIC</span>
+      <h2>Music connects<br><span>every feeling.</span></h2>
+      <p>
+        Store Ikbal Sopan hadir untuk memperkenalkan,
+        mendukung, dan membagikan karya musik.
+        Terima kasih sudah menjadi bagian dari perjalanan ini.
+      </p>
+      <a href="https://wa.me/6283148451522"
+         target="_blank" rel="noopener" class="about-link">
+        CONTACT US ↗
+      </a>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <a href="#" class="brand">
+    <span class="brand-icon">IS.</span>
+    <span>IKBAL <b>SOPAN</b></span>
+  </a>
+  <p>© 2026 STORE IKBAL SOPAN. ALL RIGHTS RESERVED.</p>
+  <a href="https://wa.me/6283148451522">WHATSAPP ↗</a>
+</footer>
+
+<script src="config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="app.js"></script>
 </body>
 </html>
