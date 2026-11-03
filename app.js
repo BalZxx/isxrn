@@ -6,7 +6,6 @@ let songs = [];
 let currentAudio = null;
 let currentButton = null;
 let currentCard = null;
-let isSeeking = false;
 
 const songList = document.getElementById("songList");
 const searchInput = document.getElementById("searchInput");
@@ -40,9 +39,9 @@ function escapeJS(value) {
 
 function formatTime(seconds) {
   if (!Number.isFinite(seconds)) return "0:00";
-  const minutes = Math.floor(seconds / 60);
-  const secs = Math.floor(seconds % 60);
-  return `${minutes}:${String(secs).padStart(2, "0")}`;
+  const m = Math.floor(seconds / 60);
+  const s = Math.floor(seconds % 60);
+  return `${m}:${String(s).padStart(2, "0")}`;
 }
 
 function buyLink(song) {
@@ -62,25 +61,23 @@ function renderSongs(keyword = "") {
       .includes(keyword.toLowerCase())
   );
 
-  musicCount.textContent = `${filtered.length}`;
+  musicCount.textContent = `${filtered.length} MUSIK`;
 
   if (!filtered.length) {
-    songList.innerHTML =
-      `<div class="empty">Belum ada musik ditemukan.</div>`;
+    songList.innerHTML = `<div class="empty">Belum ada musik ditemukan.</div>`;
     return;
   }
 
   songList.innerHTML = filtered.map(song => {
     const title = escapeHTML(song.title || "Tanpa Judul");
     const artist = escapeHTML(song.artist || "Unknown Artist");
-    const cover = song.cover_url || "";
+    const cover = escapeHTML(song.cover_url || "");
     const price = rupiah(song.price);
     const audio = song.preview_url || song.audio_url || "";
 
     return `
       <article class="song-card">
-        <img src="${escapeHTML(cover)}"
-          alt="${title}"
+        <img src="${cover}" alt="${title}"
           onerror="this.src='https://placehold.co/500x500/191919/c6ff55?text=STORE+IS'">
 
         <div class="song-info">
@@ -88,9 +85,14 @@ function renderSongs(keyword = "") {
           <p>${artist}</p>
           <div class="song-price">${price}</div>
 
-          <div class="playback-controls"
-            style="margin:14px 0;padding:12px;background:#171717;border-radius:12px;">
-
+          <div class="music-controls" style="
+            margin:14px 0;
+            padding:12px;
+            background:#171717;
+            border:1px solid #333;
+            border-radius:12px;
+            color:#fff;
+          ">
             <input type="range"
               class="seek-bar"
               min="0"
@@ -100,21 +102,39 @@ function renderSongs(keyword = "") {
               oninput="seekSong(this)"
               style="width:100%;accent-color:#c6ff55;cursor:pointer;">
 
-            <div style="display:flex;justify-content:space-between;font-size:12px;color:#aaa;margin-top:5px;">
+            <div style="
+              display:flex;
+              justify-content:space-between;
+              color:#aaa;
+              font-size:12px;
+              margin-top:5px;
+            ">
               <span class="current-time">0:00</span>
               <span class="duration-time">0:00</span>
             </div>
 
-            <select class="speed-control"
-              onchange="changePlaybackRate(this)"
-              style="margin-top:10px;padding:7px 10px;background:#242424;color:#c6ff55;border:1px solid #444;border-radius:7px;">
-              <option value="0.5">0.5x</option>
-              <option value="0.75">0.75x</option>
-              <option value="1" selected>1x Normal</option>
-              <option value="1.25">1.25x</option>
-              <option value="1.5">1.5x</option>
-              <option value="2">2x</option>
-            </select>
+            <div style="margin-top:10px;">
+              <label style="font-size:12px;color:#aaa;">Kecepatan musik</label>
+              <select class="speed-control"
+                onchange="changePlaybackRate(this)"
+                style="
+                  display:block;
+                  margin-top:5px;
+                  padding:8px;
+                  width:100%;
+                  background:#242424;
+                  color:#c6ff55;
+                  border:1px solid #444;
+                  border-radius:7px;
+                ">
+                <option value="0.5">0.5x</option>
+                <option value="0.75">0.75x</option>
+                <option value="1" selected>1x Normal</option>
+                <option value="1.25">1.25x</option>
+                <option value="1.5">1.5x</option>
+                <option value="2">2x</option>
+              </select>
+            </div>
           </div>
 
           <div class="song-actions">
@@ -141,7 +161,7 @@ function seekSong(slider) {
   if (!Number.isFinite(currentAudio.duration)) return;
 
   currentAudio.currentTime =
-    (Number(slider.value) / 100) * currentAudio.duration;
+    Number(slider.value) / 100 * currentAudio.duration;
 }
 
 function changePlaybackRate(select) {
@@ -151,39 +171,32 @@ function changePlaybackRate(select) {
   currentAudio.playbackRate = Number(select.value);
 }
 
-function updatePlaybackControls() {
+function updateControls() {
   if (!currentAudio || !currentCard) return;
 
   const slider = currentCard.querySelector(".seek-bar");
-  const currentTime = currentCard.querySelector(".current-time");
-  const durationTime = currentCard.querySelector(".duration-time");
+  const now = currentCard.querySelector(".current-time");
+  const total = currentCard.querySelector(".duration-time");
 
-  if (!slider || !currentTime || !durationTime) return;
+  if (!slider || !now || !total) return;
 
   const duration = currentAudio.duration || 0;
   const position = currentAudio.currentTime || 0;
 
-  if (!isSeeking) {
-    slider.value = duration
-      ? (position / duration) * 100
-      : 0;
-  }
-
-  currentTime.textContent = formatTime(position);
-  durationTime.textContent = formatTime(duration);
+  slider.value = duration ? position / duration * 100 : 0;
+  now.textContent = formatTime(position);
+  total.textContent = formatTime(duration);
 }
 
 function resetPlayer() {
-  if (currentButton) {
-    currentButton.textContent = "▶ Preview";
-  }
+  if (currentButton) currentButton.textContent = "▶ Preview";
 
   if (currentCard) {
     const slider = currentCard.querySelector(".seek-bar");
-    const currentTime = currentCard.querySelector(".current-time");
+    const now = currentCard.querySelector(".current-time");
 
     if (slider) slider.value = 0;
-    if (currentTime) currentTime.textContent = "0:00";
+    if (now) now.textContent = "0:00";
   }
 
   currentAudio = null;
@@ -203,7 +216,7 @@ async function playSong(url, button) {
         await currentAudio.play();
         button.textContent = "❚❚ Pause";
       } catch (error) {
-        alert("Musik tidak dapat dilanjutkan.");
+        alert("Musik tidak dapat diputar.");
       }
     } else {
       currentAudio.pause();
@@ -222,22 +235,18 @@ async function playSong(url, button) {
     btn.textContent = "▶ Preview";
   });
 
-  const audio = new Audio();
-  audio.preload = "metadata";
-  audio.src = url;
-
+  const audio = new Audio(url);
   currentAudio = audio;
   currentButton = button;
   currentCard = button.closest(".song-card");
 
-  audio.addEventListener("loadedmetadata", updatePlaybackControls);
-  audio.addEventListener("durationchange", updatePlaybackControls);
-  audio.addEventListener("timeupdate", updatePlaybackControls);
-
+  audio.addEventListener("loadedmetadata", updateControls);
+  audio.addEventListener("durationchange", updateControls);
+  audio.addEventListener("timeupdate", updateControls);
   audio.addEventListener("ended", resetPlayer);
 
   audio.addEventListener("error", () => {
-    alert("Preview tidak dapat diputar. Periksa file audio dan koneksi.");
+    alert("File preview tidak dapat diputar.");
     resetPlayer();
   });
 
@@ -245,8 +254,7 @@ async function playSong(url, button) {
     await audio.play();
     button.textContent = "❚❚ Pause";
   } catch (error) {
-    console.error("Audio error:", error);
-    alert("Preview tidak dapat diputar. Periksa file audio dan koneksi.");
+    alert("Musik tidak dapat diputar.");
     resetPlayer();
   }
 }
@@ -258,11 +266,9 @@ async function loadSongs() {
     !CONFIG.SUPABASE_ANON_KEY ||
     CONFIG.SUPABASE_URL.includes("ISI_")
   ) {
-    songList.innerHTML = `
-      <div class="empty">
-        Katalog sedang menunggu koneksi database.
-      </div>`;
-    musicCount.textContent = "0";
+    songList.innerHTML =
+      `<div class="empty">Katalog sedang menunggu koneksi database.</div>`;
+    musicCount.textContent = "0 MUSIK";
     return;
   }
 
@@ -282,13 +288,10 @@ async function loadSongs() {
 
     songs = data || [];
     renderSongs(searchInput.value);
-
   } catch (error) {
     console.error(error);
-    songList.innerHTML = `
-      <div class="empty">
-        Gagal memuat musik. Silakan coba lagi nanti.
-      </div>`;
+    songList.innerHTML =
+      `<div class="empty">Gagal memuat musik. Silakan coba lagi.</div>`;
   }
 }
 
@@ -298,7 +301,6 @@ searchInput.addEventListener("input", event => {
     currentAudio.src = "";
     resetPlayer();
   }
-
   renderSongs(event.target.value);
 });
 
