@@ -289,64 +289,63 @@ $("songForm").addEventListener("submit", async (event) => {
 
 // TAMPILKAN DAFTAR LAGU
 async function loadSongs() {
-  $("songsList").innerHTML = '<p class="loading">Memuat katalog musik...</p>';
+  const list = $("songsList");
+  const refresh = $("refreshSongsBtn");
+  if (refresh) { refresh.disabled = true; refresh.textContent = "Memuat..."; }
+  list.innerHTML = '<p class="loading">Memuat katalog musik...</p>';
 
-  const { data, error } = await supabaseClient
-    .from("songs")
-    .select("*")
-    .order("created_at", { ascending: false });
+  try {
+    const { data, error } = await supabaseClient
+      .from("songs")
+      .select("id,title,artist,price,cover_url,created_at")
+      .order("created_at", { ascending: false })
+      .limit(200);
 
-  if (error) {
-    $("songsList").innerHTML =
-      '<p class="empty">Gagal memuat: ' + error.message + '</p>';
-    return;
+    if (error) throw error;
+    if (!data || data.length === 0) {
+      list.innerHTML = '<p class="empty">Belum ada musik. Tambahkan lagu pertamamu!</p>';
+      return;
+    }
+
+    const fragment = document.createDocumentFragment();
+    data.forEach((song) => {
+      const item = document.createElement("div");
+      item.className = "admin-song-item";
+
+      const cover = document.createElement("img");
+      cover.src = song.cover_url || "";
+      cover.alt = "Cover " + (song.title || "musik");
+      cover.loading = "lazy";
+      cover.decoding = "async";
+
+      const info = document.createElement("div");
+      info.className = "admin-song-info";
+      const title = document.createElement("strong");
+      title.textContent = song.title || "Tanpa judul";
+      const details = document.createElement("span");
+      details.textContent = (song.artist || "Artis tidak diketahui") + " • " + Number(song.price || 0).toLocaleString("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 });
+      info.append(title, details);
+
+      const actions = document.createElement("div");
+      actions.className = "admin-song-actions";
+      const editButton = document.createElement("button");
+      editButton.textContent = "Edit";
+      editButton.addEventListener("click", () => editSong(song));
+      const deleteButton = document.createElement("button");
+      deleteButton.textContent = "Hapus";
+      deleteButton.className = "delete-song";
+      deleteButton.addEventListener("click", () => deleteSong(song.id));
+      actions.append(editButton, deleteButton);
+      item.append(cover, info, actions);
+      fragment.appendChild(item);
+    });
+    list.replaceChildren(fragment);
+  } catch (error) {
+    console.error("Gagal memuat katalog admin:", error);
+    list.innerHTML = '<p class="empty">Gagal memuat katalog: ' + String(error.message || error).replace(/[&<>"]/g, ch => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[ch])) + '</p>';
+  } finally {
+    if (refresh) { refresh.disabled = false; refresh.textContent = "↻ Refresh"; }
   }
-
-  if (!data || data.length === 0) {
-    $("songsList").innerHTML =
-      '<p class="empty">Belum ada musik. Tambahkan lagu pertamamu!</p>';
-    return;
-  }
-
-  $("songsList").innerHTML = "";
-
-  data.forEach((song) => {
-    const item = document.createElement("div");
-    item.className = "admin-song-item";
-
-    const cover = document.createElement("img");
-    cover.src = song.cover_url || "";
-    cover.alt = "Cover " + song.title;
-
-    const info = document.createElement("div");
-    info.className = "admin-song-info";
-
-    const title = document.createElement("strong");
-    title.textContent = song.title;
-
-    const details = document.createElement("span");
-    details.textContent =
-      song.artist + " • Rp" + Number(song.price).toLocaleString("id-ID");
-
-    info.append(title, details);
-
-    const actions = document.createElement("div");
-    actions.className = "admin-song-actions";
-
-    const editButton = document.createElement("button");
-    editButton.textContent = "Edit";
-    editButton.addEventListener("click", () => editSong(song));
-
-    const deleteButton = document.createElement("button");
-    deleteButton.textContent = "Hapus";
-    deleteButton.className = "delete-song";
-    deleteButton.addEventListener("click", () => deleteSong(song.id));
-
-    actions.append(editButton, deleteButton);
-    item.append(cover, info, actions);
-
-    $("songsList").appendChild(item);
-  });
 }
 
 // EDIT LAGU
