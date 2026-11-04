@@ -222,6 +222,8 @@ $("songForm").addEventListener("submit", async (event) => {
   const id = $("songId").value;
   const title = $("songTitle").value.trim();
   const artist = $("songArtist").value.trim();
+  const artistPhones = { "Ikbal Sopan": "6283148451522", "Kikuk Neverdie": "6283805979397" };
+  const whatsapp_number = artistPhones[artist] || "6283148451522";
   const price = Number($("songPrice").value);
   const coverFile = $("coverFile").files[0];
   const audioFile = $("audioFile").files[0];
@@ -239,6 +241,7 @@ $("songForm").addEventListener("submit", async (event) => {
     const songData = {
       title,
       artist,
+      whatsapp_number,
       price,
       is_active: true
     };
