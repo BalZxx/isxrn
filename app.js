@@ -585,4 +585,24 @@ function stopAudioVisualizer() {
   });
 }
 
-const musicRequestForm=document.getElementById("musicRequestForm");if(musicRequestForm)musicRequestForm.addEventListener("submit",event=>{event.preventDefault();const initial=document.getElementById("requestInitial").value.trim();const format=document.getElementById("requestFormat").value;const detail=document.getElementById("requestDetail").value.trim();if(!initial)return;const message="Halo Store Ikbal Sopan, saya ingin memesan jasa inisial remix.\nInisial/nama remix: "+initial+"\nFormat file: "+format+"\nHarga: Rp25.000"+(detail?"\nDetail pesanan: "+detail:"");window.open("https://wa.me/"+PHONE+"?text="+encodeURIComponent(message),"_blank","noopener");});
+async function loadRemixSamples(){
+  const target=document.getElementById("remixSampleList");
+  if(!target||!window.supabase||!CONFIG.SUPABASE_URL||!CONFIG.SUPABASE_ANON_KEY){if(target)target.innerHTML="<p>Contoh audio belum tersedia.</p>";return;}
+  try{
+    const db=window.supabase.createClient(CONFIG.SUPABASE_URL,CONFIG.SUPABASE_ANON_KEY);
+    const {data,error}=await db.from("remix_audio_samples").select("id,title,audio_url").order("created_at",{ascending:false});
+    if(error)throw error;
+    if(!data||!data.length){target.innerHTML="<p>Contoh audio akan ditampilkan di sini.</p>";return;}
+    target.innerHTML=data.map(item=>'<div class="remix-sample"><span>'+escapeHTML(item.title||"Contoh Inisial Remix")+'</span><audio controls preload="none" src="'+escapeHTML(item.audio_url)+'"></audio></div>').join("");
+  }catch(error){console.warn("Contoh audio remix:",error);target.innerHTML="<p>Contoh audio belum dapat dimuat.</p>";}
+}
+loadRemixSamples();
+const musicRequestForm=document.getElementById("musicRequestForm");
+if(musicRequestForm)musicRequestForm.addEventListener("submit",event=>{
+  event.preventDefault();
+  const initial=document.getElementById("requestInitial").value.trim();
+  const detail=document.getElementById("requestDetail").value.trim();
+  if(!initial)return;
+  const message="Halo Store Ikbal Sopan, saya ingin memesan jasa inisial remix.\\nInisial/nama remix: "+initial+"\\nHarga: Rp25.000"+(detail?"\\nDetail pesanan: "+detail:"");
+  window.open("https://wa.me/"+PHONE+"?text="+encodeURIComponent(message),"_blank","noopener");
+});
