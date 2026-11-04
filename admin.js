@@ -26,6 +26,7 @@ function showDashboard() {
   dashboardSection.hidden = false;
   recoverySection.hidden = true;
   loadSongs();
+  loadStoreLogoSettings();
 }
 
 // LOGIN
