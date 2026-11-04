@@ -390,6 +390,9 @@ function showPersistentPlayer() {
   const artist = song.artist || (currentCard && currentCard.querySelector(".song-info p")?.textContent) || "Store Ikbal Sopan";
   const image = song.cover_url || (cover && cover.src) || "";
 
+  const fullPlayer = document.getElementById("isFullPlayer");
+  if (fullPlayer) fullPlayer.style.setProperty("--player-art", image ? 'url("' + image.replace(/"/g, '\\"') + '")' : "none");
+
   mini.hidden = false;
   mini.style.display = "flex";
   document.getElementById("isMiniCover").src = image;
@@ -478,48 +481,42 @@ function startAudioVisualizer(audio) {
   const wave = document.getElementById("isWave");
   const bars = Array.from(document.querySelectorAll("#isWave i"));
   if (!wave || !bars.length) return;
-
   try {
     const AudioContextClass = window.AudioContext || window.webkitAudioContext;
     if (!AudioContextClass) throw new Error("Web Audio API tidak tersedia");
     if (!audioContext) audioContext = new AudioContextClass();
     if (audioContext.state === "suspended") audioContext.resume();
-
     analyser = audioContext.createAnalyser();
     analyser.fftSize = 512;
     analyser.minDecibels = -88;
-    analyser.maxDecibels = -20;
-    analyser.smoothingTimeConstant = 0.82;
-
+    analyser.maxDecibels = -24;
+    analyser.smoothingTimeConstant = 0.88;
     visualizerSource = audio.__storeVisualizerSource || audioContext.createMediaElementSource(audio);
     audio.__storeVisualizerSource = visualizerSource;
     visualizerSource.connect(analyser);
     analyser.connect(audioContext.destination);
-
     const spectrum = new Uint8Array(analyser.frequencyBinCount);
     const levels = bars.map(() => 0);
+    const half = Math.ceil(bars.length / 2);
     wave.classList.remove("is-fallback");
     wave.classList.add("is-live", "is-playing");
-
     const draw = () => {
       if (!analyser || audio !== currentAudio || audio.paused) return;
       analyser.getByteFrequencyData(spectrum);
-
-      bars.forEach((bar, index) => {
-        // Pemetaan logaritmik memberi ruang lebih pada bass dan mid seperti equalizer musik.
-        const t = index / Math.max(1, bars.length - 1);
-        const low = Math.floor(2 + Math.pow(t, 1.85) * 30);
-        const high = Math.min(spectrum.length - 1, low + Math.max(2, Math.floor(3 + t * 7)));
-        let sum = 0;
-        for (let bin = low; bin <= high; bin++) sum += spectrum[bin];
-        const raw = (sum / (high - low + 1)) / 255;
-        const boosted = Math.pow(raw, 0.78);
-        levels[index] += (boosted - levels[index]) * (boosted > levels[index] ? 0.42 : 0.16);
-        const height = 4 + levels[index] * 66;
-        bar.style.height = height.toFixed(1) + "px";
-        bar.style.opacity = String(0.42 + levels[index] * 0.58);
-        bar.style.setProperty("--level", levels[index].toFixed(3));
-      });
+      for (let index = 0; index < half; index++) {
+        const distance = Math.abs((bars.length - 1) / 2 - index) / Math.max(1, (bars.length - 1) / 2);
+        const bin = Math.min(spectrum.length - 1, 2 + Math.floor(distance * distance * 38));
+        const raw = spectrum[bin] / 255;
+        const envelope = 0.22 + 0.78 * Math.pow(1 - distance, 0.8);
+        const target = Math.pow(raw, 0.9) * envelope;
+        levels[index] += (target - levels[index]) * (target > levels[index] ? 0.24 : 0.11);
+        const mirrored = bars.length - 1 - index;
+        const height = 3 + levels[index] * 38;
+        [index, mirrored].forEach(pos => {
+          bars[pos].style.height = height.toFixed(1) + "px";
+          bars[pos].style.opacity = String(0.28 + levels[index] * 0.62);
+        });
+      }
       visualizerFrame = requestAnimationFrame(draw);
     };
     draw();
@@ -529,7 +526,6 @@ function startAudioVisualizer(audio) {
     wave.classList.add("is-fallback");
   }
 }
-
 function pauseAudioVisualizer() {
   if (visualizerFrame) cancelAnimationFrame(visualizerFrame);
   visualizerFrame = null;
