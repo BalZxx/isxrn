@@ -410,7 +410,7 @@ async function loadStoreLogo() {
   if (!window.supabase || !CONFIG.SUPABASE_URL || !CONFIG.SUPABASE_ANON_KEY) return;
   try {
     const db = window.supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
-    const { data, error } = await db.from("store_settings").select("logo_url").eq("id", "main").maybeSingle();
+    const { data, error } = await db.from("store_branding_settings").select("logo_url").eq("id", "main").maybeSingle();
     if (error) throw error;
     if (!data?.logo_url) return;
     document.querySelectorAll("[data-store-logo]").forEach(img => {
