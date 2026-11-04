@@ -316,7 +316,11 @@ async function loadSongs() {
 
     if (error) throw error;
 
-    songs = data || [];
+    // Katalog hanya menampilkan lagu yang benar-benar memiliki URL audio.
+    songs = (data || []).filter(song => {
+      const url = song.preview_url || song.audio_url || "";
+      return typeof url === "string" && /^https?:\\/\\//i.test(url.trim());
+    });
     renderSongs(searchInput.value);
 
   } catch (error) {
@@ -512,9 +516,9 @@ function startAudioVisualizer(audio) {
     if (audioContext.state === "suspended") audioContext.resume();
     analyser = audioContext.createAnalyser();
     analyser.fftSize = 512;
-    analyser.minDecibels = -88;
-    analyser.maxDecibels = -24;
-    analyser.smoothingTimeConstant = 0.88;
+    analyser.minDecibels = -92;
+    analyser.maxDecibels = -38;
+    analyser.smoothingTimeConstant = 0.62;
     visualizerSource = audio.__storeVisualizerSource || audioContext.createMediaElementSource(audio);
     audio.__storeVisualizerSource = visualizerSource;
     visualizerSource.connect(analyser);
@@ -533,9 +537,9 @@ function startAudioVisualizer(audio) {
         const raw = spectrum[bin] / 255;
         const envelope = 0.22 + 0.78 * Math.pow(1 - distance, 0.8);
         const target = Math.pow(raw, 0.9) * envelope;
-        levels[index] += (target - levels[index]) * (target > levels[index] ? 0.24 : 0.11);
+        levels[index] += (target - levels[index]) * (target > levels[index] ? 0.62 : 0.28);
         const mirrored = bars.length - 1 - index;
-        const height = 3 + levels[index] * 50;
+        const height = 4 + levels[index] * 76;
         [index, mirrored].forEach(pos => {
           bars[pos].style.height = height.toFixed(1) + "px";
           bars[pos].style.opacity = String(0.28 + levels[index] * 0.62);
