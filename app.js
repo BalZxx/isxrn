@@ -88,8 +88,8 @@ function renderSongs(keyword = "") {
           <img src="${cover}" alt="${title}"
             loading="lazy"
             onerror="this.src='https://placehold.co/500x500/171a17/c9ff62?text=STORE+MUSIC'">
-          <button class="card-preview" type="button"
-            onclick="playSong('${escapeJS(audio)}', this)">▶ Preview</button>
+          <button class="card-preview" type="button" aria-label="Putar preview ${title}" title="Putar preview"
+            onclick="playSong('${escapeJS(audio)}', this)"><span class="card-play-icon">▶</span></button>
         </div>
         <div class="song-info">
           <div class="song-meta">
@@ -179,7 +179,7 @@ async function playSong(url, button) {
     if (currentAudio.paused) {
       try {
         await currentAudio.play();
-        button.textContent = "❚❚ Pause";
+        button.innerHTML = '<span class="card-play-icon">Ⅱ</span>';
         showPersistentPlayer();
         startAudioVisualizer(currentAudio);
         syncPersistentButtons();
@@ -189,7 +189,7 @@ async function playSong(url, button) {
       }
     } else {
       currentAudio.pause();
-      button.textContent = "▶ Preview";
+      button.innerHTML = '<span class="card-play-icon">▶</span>';
       syncPersistentButtons();
     }
     return;
@@ -202,8 +202,8 @@ async function playSong(url, button) {
     resetPlayer();
   }
 
-  document.querySelectorAll(".play-button").forEach(btn => {
-    btn.textContent = "▶ Preview";
+  document.querySelectorAll(".card-preview").forEach(btn => {
+    btn.innerHTML = '<span class="card-play-icon">▶</span>';
   });
 
   const audio = new Audio();
@@ -235,7 +235,7 @@ async function playSong(url, button) {
 
   try {
     await audio.play();
-    button.textContent = "❚❚ Pause";
+    button.innerHTML = '<span class="card-play-icon">Ⅱ</span>';
     showPersistentPlayer();
     startAudioVisualizer(audio);
   } catch (error) {
