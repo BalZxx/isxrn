@@ -319,7 +319,7 @@ async function loadSongs() {
     // Katalog hanya menampilkan lagu yang benar-benar memiliki URL audio.
     songs = (data || []).filter(song => {
       const url = song.preview_url || song.audio_url || "";
-      return typeof url === "string" && /^https?:\\/\\//i.test(url.trim());
+      return typeof url === "string" && (url.trim().startsWith("https://") || url.trim().startsWith("http://"));
     });
     renderSongs(searchInput.value);
 
