@@ -99,13 +99,18 @@ function buyLink(song) {
     "rizz neverdie": "6283805979397"
   };
   const artistKey = String(song.artist || "").trim().toLowerCase();
-  const recipient = String(song.whatsapp_number || artistPhones[artistKey] || PHONE).replace(/\\D/g, "");
-  const message =
-    `Halo, saya ingin membeli musik:\\n` +
-    `Judul: ${song.title}\\n` +
-    `Artis: ${song.artist}\\n` +
-    `Harga: ${rupiah(song.price)}`;
-  return `https://wa.me/${recipient}?text=${encodeURIComponent(message)}`;
+  const recipient = String(song.whatsapp_number || artistPhones[artistKey] || PHONE).replace(/\D/g, "");
+  const message = [
+    "Halo ISxRN! 👋",
+    "",
+    "Saya ingin memesan lagu berikut:",
+    "🎵 Judul: " + (song.title || "-"),
+    "🎤 Artis: " + (song.artist || "-"),
+    "💰 Harga: " + rupiah(song.price),
+    "",
+    "Mohon info cara pembayaran dan proses pengirimannya. Terima kasih!"
+  ].join("\n");
+  return \`https://wa.me/\${recipient}?text=\${encodeURIComponent(message)}\`;
 }
 
 // MENAMPILKAN KATALOG MUSIK
@@ -608,6 +613,15 @@ if(musicRequestForm)musicRequestForm.addEventListener("submit",event=>{
   const initial=document.getElementById("requestInitial").value.trim();
   const detail=document.getElementById("requestDetail").value.trim();
   if(!initial)return;
-  const message="Halo ISxRN, saya ingin memesan jasa inisial remix.\nInisial/nama remix: "+initial+"\nHarga: Rp25.000"+(detail?"\nDetail pesanan: "+detail:"");
+  const message=[
+    "Halo ISxRN! 👋",
+    "",
+    "Saya ingin memesan jasa inisial remix.",
+    "🔤 Inisial / nama: "+initial,
+    "💰 Harga: Rp25.000",
+    ...(detail?["📝 Detail pesanan: "+detail]:[]),
+    "",
+    "Mohon konfirmasi pesanan, estimasi pengerjaan, dan metode pembayarannya. Terima kasih!"
+  ].join("\n");
   window.open("https://wa.me/"+PHONE+"?text="+encodeURIComponent(message),"_blank","noopener");
 });
