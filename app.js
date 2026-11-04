@@ -250,6 +250,7 @@ async function playSong(url, button) {
   });
 
   const audio = preloadTrack(url) || new Audio();
+  audioPreloadCache.delete(url);
   audio.crossOrigin = "anonymous";
   audio.preload = "auto";
   if (audio.src !== url) audio.src = url;
