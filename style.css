@@ -857,3 +857,5 @@ body[data-theme="light"] .brand-icon{color:#fff}
   .is-wave i{max-height:60px}
 }
 @media(prefers-reduced-motion:reduce){.is-wave.is-fallback i{animation:none!important}}
+
+.is-wave.is-fallback:not(.is-playing) i{animation:none!important;transform:scaleY(.25);opacity:.22}
