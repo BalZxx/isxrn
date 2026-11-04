@@ -1,5 +1,44 @@
 
 const CONFIG = window.STORE_CONFIG || {};
+
+/* PILIHAN TEMA TOKO */
+function setupThemePicker(){
+  const picker=document.getElementById("themePicker");
+  const toggle=document.getElementById("themeToggle");
+  const menu=document.getElementById("themeMenu");
+  if(!picker||!toggle||!menu)return;
+  const allowed=["midnight","ocean","purple","sunset","light"];
+  let saved="midnight";
+  try{saved=localStorage.getItem("store-ikbal-theme")||"midnight"}catch(_){}
+  function applyTheme(theme){
+    if(!allowed.includes(theme))theme="midnight";
+    document.body.dataset.theme=theme==="midnight"?"":theme;
+    if(theme==="midnight")document.body.removeAttribute("data-theme");
+    picker.querySelectorAll("[data-theme-choice]").forEach(button=>{
+      const active=button.dataset.themeChoice===theme;
+      button.classList.toggle("active",active);
+      button.setAttribute("aria-pressed",String(active));
+    });
+    const dot=toggle.querySelector(".theme-toggle-dot");
+    if(dot)dot.style.background=getComputedStyle(document.body).getPropertyValue("--green").trim();
+    try{localStorage.setItem("store-ikbal-theme",theme)}catch(_){}
+  }
+  applyTheme(saved);
+  toggle.addEventListener("click",()=>{
+    const open=menu.hidden;
+    menu.hidden=!open;
+    toggle.setAttribute("aria-expanded",String(open));
+  });
+  menu.querySelectorAll("[data-theme-choice]").forEach(button=>button.addEventListener("click",()=>{
+    applyTheme(button.dataset.themeChoice);
+    menu.hidden=true;
+    toggle.setAttribute("aria-expanded","false");
+  }));
+  document.addEventListener("click",event=>{
+    if(!picker.contains(event.target)){menu.hidden=true;toggle.setAttribute("aria-expanded","false")}
+  });
+}
+
 const PHONE = CONFIG.WHATSAPP_NUMBER || "6283148451522";
 
 let songs = [];
@@ -424,6 +463,7 @@ async function loadStoreLogo() {
 }
 
 // JALANKAN KATALOG
+setupThemePicker();
 setupPersistentPlayer();
 loadStoreLogo();
 loadSongs();
