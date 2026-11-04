@@ -95,6 +95,27 @@
         </div>
       </div>
 
+      <div class="admin-panel remix-admin-panel">
+        <h2>Contoh Audio Inisial Remix</h2>
+        <p class="admin-subtitle">Bagian ini khusus untuk audio contoh jasa Inisial Remix, terpisah dari katalog lagu biasa.</p>
+        <div class="admin-form-grid">
+          <div>
+            <label for="remixSampleTitle">Nama Contoh Audio</label>
+            <input id="remixSampleTitle" type="text" maxlength="80" placeholder="Contoh: Inisial Remix 01">
+          </div>
+          <div>
+            <label for="remixSampleFile">File Audio Contoh</label>
+            <input id="remixSampleFile" type="file" accept="audio/*">
+            <small>Maksimal 30 MB. Audio ini hanya tampil di bagian Inisial Remix.</small>
+          </div>
+        </div>
+        <div class="admin-form-actions">
+          <button type="button" id="uploadRemixSampleBtn" class="admin-primary-btn">Upload Contoh Audio</button>
+        </div>
+        <p id="remixSampleMessage" class="admin-message"></p>
+        <div id="adminRemixSamples"><p class="loading">Memuat contoh audio remix...</p></div>
+      </div>
+
       <div class="admin-panel">
         <h2 id="formTitle">Tambah Musik Baru</h2>
 
