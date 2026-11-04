@@ -142,6 +142,77 @@ async function uploadFile(file, bucket) {
   return data.publicUrl;
 }
 
+
+// PENGATURAN LOGO TOKO
+async function loadStoreLogoSettings() {
+  const preview = $("currentLogoPreview");
+  const fallback = $("logoPreviewFallback");
+  const { data, error } = await supabaseClient
+    .from("store_settings")
+    .select("logo_url")
+    .eq("id", "main")
+    .maybeSingle();
+
+  if (error) {
+    showMessage("logoMessage", "Pengaturan logo belum siap. Pastikan SQL pengaturan logo sudah dijalankan di Supabase.");
+    return;
+  }
+  if (data?.logo_url) {
+    preview.src = data.logo_url + (data.logo_url.includes("?") ? "&" : "?") + "v=" + Date.now();
+    preview.hidden = false;
+    fallback.hidden = true;
+  } else {
+    preview.hidden = true;
+    fallback.hidden = false;
+  }
+}
+
+$("saveStoreLogoBtn").addEventListener("click", async () => {
+  const file = $("storeLogoFile").files[0];
+  if (!file) {
+    showMessage("logoMessage", "Pilih file logo terlebih dahulu.");
+    return;
+  }
+  if (!/^image\\/(png|jpeg|webp|svg\\+xml)$/.test(file.type)) {
+    showMessage("logoMessage", "Format harus PNG, JPG, WEBP, atau SVG.");
+    return;
+  }
+  if (file.size > 3 * 1024 * 1024) {
+    showMessage("logoMessage", "Ukuran logo maksimal 3 MB.");
+    return;
+  }
+
+  const button = $("saveStoreLogoBtn");
+  button.disabled = true;
+  button.textContent = "Mengunggah...";
+  showMessage("logoMessage", "Sedang mengunggah logo...");
+  try {
+    const extension = file.name.split(".").pop().toLowerCase().replace(/[^a-z0-9]/g, "") || "png";
+    const path = "branding/store-logo-" + Date.now() + "." + extension;
+    const { error: uploadError } = await supabaseClient.storage
+      .from("covers")
+      .upload(path, file, { cacheControl: "3600", upsert: false, contentType: file.type });
+    if (uploadError) throw uploadError;
+
+    const { data: publicData } = supabaseClient.storage.from("covers").getPublicUrl(path);
+    const { error: saveError } = await supabaseClient
+      .from("store_settings")
+      .upsert({ id: "main", logo_url: publicData.publicUrl, updated_at: new Date().toISOString() });
+    if (saveError) throw saveError;
+
+    $("currentLogoPreview").src = publicData.publicUrl;
+    $("currentLogoPreview").hidden = false;
+    $("logoPreviewFallback").hidden = true;
+    $("storeLogoFile").value = "";
+    showMessage("logoMessage", "Logo berhasil diganti! Muat ulang halaman toko untuk melihat hasilnya.");
+  } catch (error) {
+    showMessage("logoMessage", "Gagal mengganti logo: " + error.message);
+  } finally {
+    button.disabled = false;
+    button.textContent = "Simpan Logo";
+  }
+});
+
 // TAMBAH / EDIT LAGU
 $("songForm").addEventListener("submit", async (event) => {
   event.preventDefault();
