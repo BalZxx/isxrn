@@ -26,7 +26,7 @@ function showDashboard() {
   dashboardSection.hidden = false;
   recoverySection.hidden = true;
   loadSongs();
-  loadStoreLogoSettings();
+  loadStoreLogoSettings();\n  loadRemixSamplesAdmin();
 }
 
 // LOGIN
@@ -409,3 +409,42 @@ async function initializeAdmin() {
 }
 
 initializeAdmin();
+
+
+// KELOLA CONTOH AUDIO INISIAL REMIX
+async function loadRemixSamplesAdmin(){
+  const target=$("adminRemixSamples");
+  if(!target)return;
+  const {data,error}=await supabaseClient.from("remix_audio_samples").select("id,title,audio_url,storage_path").order("created_at",{ascending:false});
+  if(error){target.innerHTML='<p class="admin-message">Jalankan SQL supabase-remix-samples.sql terlebih dahulu.</p>';return;}
+  target.innerHTML=data.length?data.map(item=>'<div class="admin-song-item"><div><strong>'+String(item.title||"Contoh audio").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]))+'</strong><audio controls preload="none" src="'+item.audio_url+'"></audio></div><button type="button" class="admin-secondary-btn" data-delete-remix="'+item.id+'">Hapus</button></div>').join(""):'<p class="admin-subtitle">Belum ada contoh audio. Upload contoh pertamamu.</p>';
+  target.querySelectorAll("[data-delete-remix]").forEach(button=>button.addEventListener("click",()=>deleteRemixSample(button.dataset.deleteRemix)));
+}
+$("uploadRemixSampleBtn").addEventListener("click",async()=>{
+  const file=$("remixSampleFile").files[0],title=$("remixSampleTitle").value.trim();
+  if(!file||!title){showMessage("remixSampleMessage","Isi nama contoh dan pilih file audio.");return;}
+  if(!file.type.startsWith("audio/")){showMessage("remixSampleMessage","File harus berupa audio.");return;}
+  if(file.size>30*1024*1024){showMessage("remixSampleMessage","Ukuran audio maksimal 30 MB.");return;}
+  const button=$("uploadRemixSampleBtn");button.disabled=true;button.textContent="Mengunggah...";
+  try{
+    const ext=(file.name.split(".").pop()||"mp3").toLowerCase().replace(/[^a-z0-9]/g,"");
+    const path="remix-samples/"+Date.now()+"-"+Math.random().toString(36).slice(2,8)+"."+ext;
+    const {error:uploadError}=await supabaseClient.storage.from("music").upload(path,file,{cacheControl:"3600",upsert:false,contentType:file.type});
+    if(uploadError)throw uploadError;
+    const {data:urlData}=supabaseClient.storage.from("music").getPublicUrl(path);
+    const {error:saveError}=await supabaseClient.from("remix_audio_samples").insert({title,audio_url:urlData.publicUrl,storage_path:path});
+    if(saveError){await supabaseClient.storage.from("music").remove([path]);throw saveError;}
+    $("remixSampleTitle").value="";$("remixSampleFile").value="";
+    showMessage("remixSampleMessage","Contoh audio berhasil diunggah.");await loadRemixSamplesAdmin();
+  }catch(error){showMessage("remixSampleMessage","Gagal upload: "+error.message);}
+  finally{button.disabled=false;button.textContent="Upload Contoh Audio";}
+});
+async function deleteRemixSample(id){
+  if(!confirm("Hapus contoh audio ini?"))return;
+  const {data,error}=await supabaseClient.from("remix_audio_samples").select("storage_path").eq("id",id).single();
+  if(error){showMessage("remixSampleMessage","Gagal mengambil data audio: "+error.message);return;}
+  const {error:deleteError}=await supabaseClient.from("remix_audio_samples").delete().eq("id",id);
+  if(deleteError){showMessage("remixSampleMessage","Gagal menghapus: "+deleteError.message);return;}
+  if(data.storage_path)await supabaseClient.storage.from("music").remove([data.storage_path]);
+  showMessage("remixSampleMessage","Contoh audio berhasil dihapus.");await loadRemixSamplesAdmin();
+}
