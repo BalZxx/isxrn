@@ -174,7 +174,7 @@ $("saveStoreLogoBtn").addEventListener("click", async () => {
     showMessage("logoMessage", "Pilih file logo terlebih dahulu.");
     return;
   }
-  if (!/^image\\/(png|jpeg|webp|svg\\+xml)$/.test(file.type)) {
+  if (!["image/png", "image/jpeg", "image/webp", "image/svg+xml"].includes(file.type)) {
     showMessage("logoMessage", "Format harus PNG, JPG, WEBP, atau SVG.");
     return;
   }
