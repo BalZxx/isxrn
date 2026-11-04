@@ -1,7 +1,6 @@
-const supabaseClient = window.supabase.createClient(
-  window.STORE_CONFIG.SUPABASE_URL,
-  window.STORE_CONFIG.SUPABASE_ANON_KEY
-);
+const supabaseClient = window.supabase?.createClient && window.STORE_CONFIG?.SUPABASE_URL && window.STORE_CONFIG?.SUPABASE_ANON_KEY
+  ? window.supabase.createClient(window.STORE_CONFIG.SUPABASE_URL, window.STORE_CONFIG.SUPABASE_ANON_KEY)
+  : null;
 
 const $ = (id) => document.getElementById(id);
 
@@ -37,12 +36,13 @@ $("loginForm").addEventListener("submit", async (event) => {
   const email = $("email").value.trim();
   const password = $("password").value;
 
+  if (!supabaseClient) { showMessage("loginMessage", "Koneksi Supabase belum siap. Muat ulang halaman beberapa saat lagi."); return; }
   showMessage("loginMessage", "Sedang masuk...");
 
-  const { data, error } = await supabaseClient.auth.signInWithPassword({
-    email,
-    password
-  });
+  let result;
+  try { result = await supabaseClient.auth.signInWithPassword({ email, password }); }
+  catch (error) { showMessage("loginMessage", "Koneksi gagal: " + (error.message || error)); return; }
+  const { data, error } = result;
 
   if (error) {
     showMessage("loginMessage", "Gagal masuk: " + error.message);
@@ -401,13 +401,25 @@ $("logoutBtn").addEventListener("click", async () => {
 
 // CEK LOGIN SAAT HALAMAN DIBUKA
 async function initializeAdmin() {
-  const { data } = await supabaseClient.auth.getSession();
+  if (!supabaseClient) {
+    showLogin();
+    showMessage("loginMessage", "Supabase gagal dimuat. Periksa koneksi internet, lalu refresh halaman.");
+    return;
+  }
+  try {
+  const { data, error } = await supabaseClient.auth.getSession();
+  if (error) throw error;
 
   if (data.session) {
     currentSession = data.session;
     showDashboard();
   } else {
     showLogin();
+  }
+  } catch (error) {
+    console.error("Admin initialization error:", error);
+    showLogin();
+    showMessage("loginMessage", "Gagal menghubungkan dashboard: " + (error.message || error));
   }
 }
 
@@ -418,10 +430,12 @@ initializeAdmin();
 async function loadRemixSamplesAdmin(){
   const target=$("adminRemixSamples");
   if(!target)return;
+  try {
   const {data,error}=await supabaseClient.from("remix_audio_samples").select("id,title,audio_url,storage_path").order("created_at",{ascending:false});
-  if(error){target.innerHTML='<p class="admin-message">Jalankan SQL supabase-remix-samples.sql terlebih dahulu.</p>';return;}
+  if(error){target.innerHTML='<p class="admin-message">Fitur contoh remix belum siap: '+String(error.message||error).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]))+'</p>';return;}
   target.innerHTML=data.length?data.map(item=>'<div class="admin-song-item"><div><strong>'+String(item.title||"Contoh audio").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]))+'</strong><audio controls preload="none" src="'+item.audio_url+'"></audio></div><button type="button" class="admin-secondary-btn" data-delete-remix="'+item.id+'">Hapus</button></div>').join(""):'<p class="admin-subtitle">Belum ada contoh audio. Upload contoh pertamamu.</p>';
   target.querySelectorAll("[data-delete-remix]").forEach(button=>button.addEventListener("click",()=>deleteRemixSample(button.dataset.deleteRemix)));
+  } catch(error) { console.error("Remix samples error:",error); target.innerHTML='<p class="admin-message">Gagal memuat contoh remix: '+String(error.message||error).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]))+'</p>'; }
 }
 $("uploadRemixSampleBtn").addEventListener("click",async()=>{
   const file=$("remixSampleFile").files[0],title=$("remixSampleTitle").value.trim();
