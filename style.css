@@ -943,3 +943,21 @@ body[data-theme="light"] .brand-icon{color:#fff}
 .is-mini-progress span{background:#fff}
 .is-mini-player{border-color:rgba(255,255,255,.16)}
 @media(max-width:600px){.is-wave{height:50px;gap:2.5px}.is-wave i{max-height:36px}}
+
+
+/* FINAL REFINEMENTS — stronger waveform, neutral home hero, reliable swipe */
+.hero{
+  background:#0b0b0b!important;
+}
+.is-wave{
+  touch-action:pan-y pinch-zoom;
+  user-select:none;
+  -webkit-user-select:none;
+}
+.is-wave i{
+  max-height:48px;
+  background:linear-gradient(180deg,#fff 0%,#d0d0d0 100%)!important;
+}
+@media(max-width:600px){
+  .is-wave i{max-height:44px}
+}
