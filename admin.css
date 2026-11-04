@@ -354,3 +354,13 @@ body.admin-body {
     padding-left: 80px;
   }
 }
+
+
+/* PENGATURAN LOGO WEBSITE */
+.logo-settings-row{display:flex;align-items:center;gap:24px}
+.logo-preview-wrap{width:112px;height:112px;flex:0 0 112px;border:1px solid var(--admin-border);border-radius:16px;background:#090d09;display:grid;place-items:center;overflow:hidden;color:var(--admin-green);font-size:34px;font-weight:900}
+.logo-preview-wrap img{width:100%;height:100%;object-fit:contain;padding:8px}
+.logo-settings-form{flex:1;min-width:0}
+.logo-settings-form label{margin-top:0}
+.logo-settings-form .admin-form-actions{margin-top:14px}
+@media(max-width:600px){.logo-settings-row{align-items:flex-start;flex-direction:column}.logo-preview-wrap{width:96px;height:96px;flex-basis:96px}}
