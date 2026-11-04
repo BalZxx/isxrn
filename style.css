@@ -923,3 +923,23 @@ body[data-theme="light"] .brand-icon{color:#fff}
   .is-full-controls{margin:24px 0;gap:38px}
 }
 @media(prefers-reduced-motion:reduce){.is-wave i{transition:none!important}}
+
+
+/* MONOCHROME iPHONE PLAYER — subtle mirrored waveform + blurred album backdrop */
+.is-full-player{isolation:isolate;overflow:hidden;background:#080808!important;color:#fff}
+.is-full-player::before{content:"";position:absolute;inset:-34px;z-index:-2;background-image:var(--player-art,none);background-position:center;background-size:cover;filter:blur(34px) grayscale(1) brightness(.30);opacity:.78;transform:scale(1.12)}
+.is-full-player::after{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;background:linear-gradient(180deg,rgba(0,0,0,.42),rgba(0,0,0,.68) 55%,rgba(0,0,0,.88))}
+.is-full-kicker{color:#c2c2c2}
+.is-full-cover{box-shadow:0 24px 65px rgba(0,0,0,.55)}
+.is-wave{height:54px;max-width:370px;margin:20px auto 14px;padding:0 12px;display:flex;align-items:center;justify-content:center;gap:3px;border:0;background:transparent;mask-image:linear-gradient(90deg,transparent,#000 9%,#000 91%,transparent);-webkit-mask-image:linear-gradient(90deg,transparent,#000 9%,#000 91%,transparent)}
+.is-wave i{flex:1 1 0;width:auto;min-width:2px;max-height:40px;min-height:3px;border-radius:99px;background:linear-gradient(180deg,#fff,#a6a6a6);box-shadow:none;opacity:.65;transition:height .09s linear,opacity .12s linear}
+.is-wave.is-live.is-playing i{animation:none}
+.is-wave.is-live:not(.is-playing) i{height:3px!important;opacity:.2!important}
+.is-wave.is-fallback i{background:#d7d7d7;animation:is-wave-pulse 1.1s ease-in-out infinite alternate}
+.is-full-seek,.is-full-options input{accent-color:#fff}
+.is-full-seek::-webkit-slider-thumb{accent-color:#fff}
+.is-full-controls .is-full-play{background:#fff;color:#080808}
+.is-full-options select{background:rgba(255,255,255,.1);color:#fff;border-color:rgba(255,255,255,.2)}
+.is-mini-progress span{background:#fff}
+.is-mini-player{border-color:rgba(255,255,255,.16)}
+@media(max-width:600px){.is-wave{height:50px;gap:2.5px}.is-wave i{max-height:36px}}
