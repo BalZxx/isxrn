@@ -603,6 +603,6 @@ if(musicRequestForm)musicRequestForm.addEventListener("submit",event=>{
   const initial=document.getElementById("requestInitial").value.trim();
   const detail=document.getElementById("requestDetail").value.trim();
   if(!initial)return;
-  const message="Halo Store Ikbal Sopan, saya ingin memesan jasa inisial remix.\\nInisial/nama remix: "+initial+"\\nHarga: Rp25.000"+(detail?"\\nDetail pesanan: "+detail:"");
+  const message="Halo Store Ikbal Sopan, saya ingin memesan jasa inisial remix.\nInisial/nama remix: "+initial+"\nHarga: Rp25.000"+(detail?"\nDetail pesanan: "+detail:"");
   window.open("https://wa.me/"+PHONE+"?text="+encodeURIComponent(message),"_blank","noopener");
 });
