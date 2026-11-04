@@ -78,6 +78,23 @@
         <button id="logoutBtn" class="admin-logout-btn">Keluar</button>
       </div>
 
+      <div class="admin-panel logo-settings-panel">
+        <h2>Logo Website</h2>
+        <p class="admin-subtitle">Ganti logo yang tampil di navbar, bagian utama, dan footer toko.</p>
+        <div class="logo-settings-row">
+          <div class="logo-preview-wrap"><img id="currentLogoPreview" alt="Logo saat ini" hidden><span id="logoPreviewFallback">IS.</span></div>
+          <div class="logo-settings-form">
+            <label for="storeLogoFile">Pilih Logo Baru</label>
+            <input id="storeLogoFile" type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml">
+            <small>Disarankan PNG transparan atau SVG. Maksimal 3 MB.</small>
+            <div class="admin-form-actions">
+              <button type="button" id="saveStoreLogoBtn" class="admin-primary-btn">Simpan Logo</button>
+            </div>
+            <p id="logoMessage" class="admin-message"></p>
+          </div>
+        </div>
+      </div>
+
       <div class="admin-panel">
         <h2 id="formTitle">Tambah Musik Baru</h2>
 
