@@ -816,3 +816,44 @@ body[data-theme="light"] .brand-icon{color:#fff}
 @media(prefers-reduced-motion:reduce){
   *,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
 }
+
+
+/* APPLE MUSIC-INSPIRED LIVE SPECTRUM */
+.is-full-kicker{display:flex;align-items:center;justify-content:center;gap:9px}
+.is-full-kicker::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--green);box-shadow:0 0 12px var(--green)}
+.is-wave{
+  position:relative;
+  height:94px;
+  max-width:440px;
+  padding:12px 15px;
+  gap:4px;
+  border:1px solid color-mix(in srgb,var(--green) 17%,transparent);
+  border-radius:18px;
+  background:linear-gradient(180deg,color-mix(in srgb,var(--green) 8%,transparent),transparent);
+  -webkit-mask-image:linear-gradient(90deg,transparent 0%,#000 8%,#000 92%,transparent 100%);
+  mask-image:linear-gradient(90deg,transparent 0%,#000 8%,#000 92%,transparent 100%);
+}
+.is-wave i{
+  flex:1 1 0;
+  width:auto;
+  height:4px;
+  min-height:3px;
+  max-height:70px;
+  border-radius:999px;
+  opacity:.28;
+  background:linear-gradient(180deg,#fff 0%,var(--green) 34%,color-mix(in srgb,var(--green) 48%,transparent) 100%);
+  box-shadow:0 0 8px color-mix(in srgb,var(--green) 35%,transparent);
+  transition:height .075s linear,opacity .12s linear;
+}
+.is-wave.is-live.is-playing i{animation:none}
+.is-wave.is-live:not(.is-playing) i{height:3px!important;opacity:.2!important}
+.is-wave.is-fallback i{animation:is-wave-pulse .8s ease-in-out infinite alternate}
+.is-full-seek{height:4px;border-radius:20px}
+.is-full-seek::-webkit-slider-thumb{width:12px;height:12px}
+.is-full-controls .is-full-play{width:68px;height:68px;transition:transform .2s,box-shadow .2s}
+.is-full-controls .is-full-play:active{transform:scale(.94)}
+@media(max-width:600px){
+  .is-wave{height:82px;margin:18px auto 15px;padding:10px 12px;gap:3px;border-radius:15px}
+  .is-wave i{max-height:60px}
+}
+@media(prefers-reduced-motion:reduce){.is-wave.is-fallback i{animation:none!important}}
