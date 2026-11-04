@@ -94,13 +94,18 @@ function formatMusicTime(seconds) {
 }
 
 function buyLink(song) {
+  const artistPhones = {
+    "ikbal sopan": "6283148451522",
+    "kikuk neverdie": "6283805979397"
+  };
+  const artistKey = String(song.artist || "").trim().toLowerCase();
+  const recipient = String(song.whatsapp_number || artistPhones[artistKey] || PHONE).replace(/\\D/g, "");
   const message =
-    `Halo Store Ikbal Sopan, saya ingin membeli musik:\n` +
-    `Judul: ${song.title}\n` +
-    `Artis: ${song.artist}\n` +
+    `Halo, saya ingin membeli musik:\\n` +
+    `Judul: ${song.title}\\n` +
+    `Artis: ${song.artist}\\n` +
     `Harga: ${rupiah(song.price)}`;
-
-  return `https://wa.me/${PHONE}?text=${encodeURIComponent(message)}`;
+  return `https://wa.me/${recipient}?text=${encodeURIComponent(message)}`;
 }
 
 // MENAMPILKAN KATALOG MUSIK
