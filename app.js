@@ -426,11 +426,13 @@ async function togglePersistentPlayback() {
   if (currentAudio.paused) {
     try {
       await currentAudio.play();
-      if (currentButton) currentButton.textContent = "❚❚ Pause";
+      if (currentButton) currentButton.innerHTML = '<span class="card-play-icon">Ⅱ</span>';
+      startAudioVisualizer(currentAudio);
     } catch (error) { console.error(error); }
   } else {
     currentAudio.pause();
-    if (currentButton) currentButton.textContent = "▶ Preview";
+    if (currentButton) currentButton.innerHTML = '<span class="card-play-icon">▶</span>';
+    pauseAudioVisualizer();
   }
   syncPersistentButtons();
 }
@@ -470,54 +472,85 @@ setupPersistentPlayer();
 loadStoreLogo();
 loadSongs();
 
-// AUDIO VISUALIZER REAL-TIME
+// AUDIO VISUALIZER REAL-TIME — spectrum halus ala Apple Music
 function startAudioVisualizer(audio) {
   stopAudioVisualizer();
-  const bars = Array.from(document.querySelectorAll('#isWave i'));
-  if (!bars.length) return;
+  const wave = document.getElementById("isWave");
+  const bars = Array.from(document.querySelectorAll("#isWave i"));
+  if (!wave || !bars.length) return;
+
   try {
     const AudioContextClass = window.AudioContext || window.webkitAudioContext;
-    if (!AudioContextClass) throw new Error('Web Audio API tidak tersedia');
+    if (!AudioContextClass) throw new Error("Web Audio API tidak tersedia");
     if (!audioContext) audioContext = new AudioContextClass();
-    if (audioContext.state === 'suspended') audioContext.resume();
+    if (audioContext.state === "suspended") audioContext.resume();
+
     analyser = audioContext.createAnalyser();
-    analyser.fftSize = 256;
-    analyser.smoothingTimeConstant = 0.68;
+    analyser.fftSize = 512;
+    analyser.minDecibels = -88;
+    analyser.maxDecibels = -20;
+    analyser.smoothingTimeConstant = 0.82;
+
     visualizerSource = audio.__storeVisualizerSource || audioContext.createMediaElementSource(audio);
     audio.__storeVisualizerSource = visualizerSource;
     visualizerSource.connect(analyser);
     analyser.connect(audioContext.destination);
-    const data = new Uint8Array(analyser.frequencyBinCount);
+
+    const spectrum = new Uint8Array(analyser.frequencyBinCount);
+    const levels = bars.map(() => 0);
+    wave.classList.remove("is-fallback");
+    wave.classList.add("is-live", "is-playing");
+
     const draw = () => {
-      if (!analyser || audio !== currentAudio) return;
-      analyser.getByteFrequencyData(data);
+      if (!analyser || audio !== currentAudio || audio.paused) return;
+      analyser.getByteFrequencyData(spectrum);
+
       bars.forEach((bar, index) => {
-        const position = index / Math.max(1, bars.length - 1);
-        const perceptual = Math.pow(position, 1.65);
-        const bin = Math.min(data.length - 1, Math.max(1, Math.floor(1 + perceptual * (data.length - 2))));
-        const level = data[bin] / 255;
-        const neighbor = data[Math.min(data.length - 1, bin + 1)] / 255;
-        const energy = Math.min(1, level * 0.72 + neighbor * 0.28);
-        bar.style.height = Math.max(3, 3 + energy * 62) + 'px';
-        bar.style.transform = 'scaleY(1)';
-        bar.style.opacity = String(0.45 + level * 0.55);
+        // Pemetaan logaritmik memberi ruang lebih pada bass dan mid seperti equalizer musik.
+        const t = index / Math.max(1, bars.length - 1);
+        const low = Math.floor(2 + Math.pow(t, 1.85) * 30);
+        const high = Math.min(spectrum.length - 1, low + Math.max(2, Math.floor(3 + t * 7)));
+        let sum = 0;
+        for (let bin = low; bin <= high; bin++) sum += spectrum[bin];
+        const raw = (sum / (high - low + 1)) / 255;
+        const boosted = Math.pow(raw, 0.78);
+        levels[index] += (boosted - levels[index]) * (boosted > levels[index] ? 0.42 : 0.16);
+        const height = 4 + levels[index] * 66;
+        bar.style.height = height.toFixed(1) + "px";
+        bar.style.opacity = String(0.42 + levels[index] * 0.58);
+        bar.style.setProperty("--level", levels[index].toFixed(3));
       });
       visualizerFrame = requestAnimationFrame(draw);
     };
     draw();
   } catch (error) {
-    console.warn('Visualizer real-time tidak tersedia; memakai animasi cadangan.', error);
-    document.getElementById('isWave')?.classList.add('is-fallback');
+    console.warn("Visualizer real-time tidak tersedia; memakai animasi cadangan.", error);
+    wave.classList.remove("is-live");
+    wave.classList.add("is-fallback");
   }
 }
-function stopAudioVisualizer() {
+
+function pauseAudioVisualizer() {
   if (visualizerFrame) cancelAnimationFrame(visualizerFrame);
   visualizerFrame = null;
+  const wave = document.getElementById("isWave");
+  if (wave) wave.classList.remove("is-playing");
+  document.querySelectorAll("#isWave i").forEach(bar => {
+    bar.style.height = "";
+    bar.style.opacity = "";
+    bar.style.removeProperty("--level");
+  });
+}
+
+function stopAudioVisualizer() {
+  pauseAudioVisualizer();
   if (visualizerSource) { try { visualizerSource.disconnect(); } catch (_) {} }
   if (analyser) { try { analyser.disconnect(); } catch (_) {} }
   visualizerSource = null;
   analyser = null;
-  document.querySelectorAll('#isWave i').forEach(bar => {
-    bar.style.height = ''; bar.style.transform = ''; bar.style.opacity = '';
+  const wave = document.getElementById("isWave");
+  if (wave) wave.classList.remove("is-live", "is-fallback", "is-playing");
+  document.querySelectorAll("#isWave i").forEach(bar => {
+    bar.style.transform = "";
   });
 }
