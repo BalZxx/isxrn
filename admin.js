@@ -26,7 +26,8 @@ function showDashboard() {
   dashboardSection.hidden = false;
   recoverySection.hidden = true;
   loadSongs();
-  loadStoreLogoSettings();\n  loadRemixSamplesAdmin();
+  loadStoreLogoSettings();
+  loadRemixSamplesAdmin();
 }
 
 // LOGIN
