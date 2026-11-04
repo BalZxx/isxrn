@@ -976,3 +976,38 @@ body[data-theme="light"] .brand-icon{color:#fff}
 .admin-song-item{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:14px 0;border-bottom:1px solid var(--border,#303630)}
 .admin-song-item>div{min-width:0;flex:1;display:grid;gap:8px}
 @media(max-width:600px){.admin-song-item{align-items:flex-start;flex-direction:column}.admin-song-item button{width:100%}}
+
+
+
+/* ISxRN — refined storefront experience */
+:root{--green:#c9f77a;--border:rgba(255,255,255,.085)}
+body{background:#080b09;color:#f4f6f1;letter-spacing:.01em}
+::selection{background:rgba(201,247,122,.28);color:#fff}
+.navbar{height:76px;padding-inline:clamp(20px,7vw,112px);background:rgba(8,11,9,.76);border-bottom:1px solid rgba(255,255,255,.065);box-shadow:0 8px 35px #0002}
+.brand{font-size:13px;letter-spacing:1.8px}.brand-icon{border-radius:14px;background:linear-gradient(145deg,#d9ffa0,#a8d95b);color:#10160a}
+.navbar nav{gap:clamp(16px,2.7vw,38px)}.navbar nav a{font-size:12px;font-weight:600;transition:color .25s,transform .25s}.navbar nav a:hover{transform:translateY(-1px)}
+.admin-link{border-radius:999px;padding:11px 19px;background:rgba(201,247,122,.07);border-color:rgba(201,247,122,.25);transition:.25s}.admin-link:hover{background:var(--green);color:#10160a}
+.hero{min-height:660px;padding:105px clamp(24px,10vw,160px) 76px;background:radial-gradient(ellipse at 78% 45%,rgba(164,214,96,.17),transparent 31%),radial-gradient(ellipse at 10% 80%,rgba(58,100,64,.12),transparent 38%),#080b09}
+.hero-label,.eyebrow{letter-spacing:2.5px}.hero h1{font-size:clamp(56px,8vw,108px);line-height:.98;letter-spacing:-.075em}.hero h1 span,.about h2 span,.catalog-heading h2 span{background:linear-gradient(100deg,#e2ffc0,#a9dc68 65%,#8cb64e);-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero-content>p,.catalog-heading p{line-height:1.85}.hero-button{border-radius:999px;padding:16px 25px;box-shadow:0 8px 30px rgba(201,247,122,.12)}.hero-button:hover{transform:translateY(-3px)}
+.art-card{border-radius:25px;backdrop-filter:blur(12px);transform:rotate(-6deg);transition:transform .6s cubic-bezier(.2,.8,.2,1)}.hero-art:hover .art-card{transform:rotate(-2deg) translateY(-5px)}.floating-tag{border-radius:999px;box-shadow:0 10px 30px #0005}
+.features{padding:27px clamp(24px,10vw,160px);background:rgba(255,255,255,.018);border-color:rgba(255,255,255,.06)}.features strong{font-size:18px}
+.catalog{padding:clamp(75px,9vw,125px) clamp(20px,8vw,130px);background:linear-gradient(180deg,#090c0a,#0b0f0c 55%,#090c0a)}
+.catalog-heading{margin-bottom:38px}.catalog-heading h2{font-size:clamp(36px,5vw,58px);letter-spacing:-.065em}.catalog-count{padding:12px 17px;border:1px solid var(--border);border-radius:16px;background:rgba(255,255,255,.025)}.catalog-count strong{font-size:30px}
+.catalog-tools{margin-bottom:25px}.search-box{height:52px;width:min(470px,100%);border-radius:999px;padding:0 20px;background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.09);transition:.25s}.search-box:focus-within{border-color:rgba(201,247,122,.5);box-shadow:0 0 0 4px rgba(201,247,122,.055)}.search-box input{font-family:inherit}.sort-label{letter-spacing:1.6px}
+.song-grid{grid-template-columns:repeat(auto-fill,minmax(225px,1fr));gap:20px}
+.song-card{position:relative;background:linear-gradient(155deg,#151a16,#0d110e);border:1px solid rgba(255,255,255,.075);border-radius:17px;box-shadow:0 10px 28px rgba(0,0,0,.16);transition:transform .35s cubic-bezier(.2,.8,.2,1),border-color .35s,box-shadow .35s}
+.song-card:hover{transform:translateY(-6px);border-color:rgba(201,247,122,.35);box-shadow:0 22px 48px #0007,0 0 28px rgba(201,247,122,.045)}
+.song-cover-wrap{border-radius:0;aspect-ratio:1;background:#171c18}.song-cover-wrap img{transition:transform .65s cubic-bezier(.2,.8,.2,1)}.song-card:hover .song-cover-wrap img{transform:scale(1.045)}
+.card-preview{width:44px;height:44px;right:14px;bottom:14px;background:rgba(247,249,242,.94);box-shadow:0 5px 20px #0007;transition:transform .25s,background .25s}.card-preview:hover{transform:scale(1.07);background:var(--green)}
+.song-info{padding:17px 17px 16px}.song-meta h3{font-size:14px;font-weight:700;letter-spacing:-.2px}.song-meta p{font-size:11px;line-height:1.5}.song-price{font-size:17px;color:#d3f89d}
+.song-actions button,.song-actions a{border-radius:999px!important;min-height:39px;transition:transform .22s,filter .22s,background .22s}.song-actions button:hover,.song-actions a:hover{transform:translateY(-2px);filter:brightness(1.08)}.play-button{background:#242b25;color:#e9eee5}.buy-button{background:linear-gradient(120deg,#d9ffa0,#b6e66c);color:#10160a}
+.loading,.empty{border-radius:16px;background:rgba(255,255,255,.025);border-color:var(--border)}
+.music-request{padding:clamp(65px,8vw,110px) clamp(22px,9vw,140px);background:radial-gradient(ellipse at 15% 40%,rgba(131,174,81,.13),transparent 38%),#0d120e}
+.request-form{border:1px solid rgba(255,255,255,.09);border-radius:22px;background:rgba(255,255,255,.035);padding:clamp(20px,3vw,34px);box-shadow:0 20px 55px #0003}.request-form input,.request-form textarea{border-radius:12px!important;background:rgba(0,0,0,.2)!important;border:1px solid rgba(255,255,255,.1)!important}.request-form button{border-radius:999px!important;background:linear-gradient(120deg,#d9ffa0,#b6e66c)!important;color:#10160a!important}
+.about{padding:clamp(70px,9vw,115px) clamp(24px,10vw,160px);background:radial-gradient(ellipse at 12% 50%,rgba(126,164,83,.17),transparent 38%),#0c100d}
+.about-mark{filter:drop-shadow(0 0 35px rgba(201,247,122,.12))}
+footer{padding:32px clamp(22px,8vw,130px);background:#070907;border-color:rgba(255,255,255,.07)}
+.is-mini-player{border-radius:22px;background:rgba(18,23,19,.9);border-color:rgba(201,247,122,.22);backdrop-filter:blur(28px)}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
+@media(max-width:650px){.navbar{height:68px;padding-inline:17px}.brand{font-size:12px}.admin-link{padding:9px 13px;font-size:9px}.hero{min-height:690px;padding:75px 7% 85px}.hero h1{font-size:clamp(56px,14vw,70px)}.catalog{padding:72px 5% 88px}.catalog-heading{align-items:center}.catalog-heading h2{font-size:36px}.song-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.song-card{border-radius:13px}.song-info{padding:12px}.song-meta h3{font-size:12px}.song-price{font-size:15px}.song-actions{gap:6px}.song-actions button,.song-actions a{font-size:9px;padding:10px 4px}.card-preview{width:38px;height:38px}.music-request{padding:65px 6%}.about{padding:65px 7%}}
