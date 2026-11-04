@@ -149,7 +149,7 @@ async function loadStoreLogoSettings() {
   const preview = $("currentLogoPreview");
   const fallback = $("logoPreviewFallback");
   const { data, error } = await supabaseClient
-    .from("store_settings")
+    .from("store_branding_settings")
     .select("logo_url")
     .eq("id", "main")
     .maybeSingle();
@@ -197,7 +197,7 @@ $("saveStoreLogoBtn").addEventListener("click", async () => {
 
     const { data: publicData } = supabaseClient.storage.from("covers").getPublicUrl(path);
     const { error: saveError } = await supabaseClient
-      .from("store_settings")
+      .from("store_branding_settings")
       .upsert({ id: "main", logo_url: publicData.publicUrl, updated_at: new Date().toISOString() });
     if (saveError) throw saveError;
 
