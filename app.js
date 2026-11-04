@@ -54,7 +54,6 @@ let visualizerFrame = null;
 let visualizerSource = null;
 const audioPreloadCache = new Map();
 function preloadTrack(url){if(!url||audioPreloadCache.has(url))return audioPreloadCache.get(url);const audio=new Audio();audio.crossOrigin='anonymous';audio.preload='auto';audio.src=url;audio.load();audioPreloadCache.set(url,audio);return audio;}
-function preloadAdjacentTracks(song){const index=songs.indexOf(song);if(index<0||!songs.length)return;[1,2].forEach(step=>{const next=songs[(index+step)%songs.length];if(next)preloadTrack(next.preview_url||next.audio_url||'');});}
 
 const songList = document.getElementById("songList");
 const searchInput = document.getElementById("searchInput");
@@ -269,7 +268,6 @@ async function playSong(url, button) {
   currentButton = button;
   currentCard = button.closest(".song-card");
   currentSong = songs.find(song => (song.preview_url || song.audio_url || "") === url) || null;
-  if (currentSong) preloadAdjacentTracks(currentSong);
 
   audio.addEventListener("loadedmetadata", updateMusicControls);
   audio.addEventListener("durationchange", updateMusicControls);
@@ -325,7 +323,7 @@ async function loadSongs() {
 
     const { data, error } = await db
       .from("songs")
-      .select("*")
+      .select("id,title,artist,price,cover_url,preview_url,audio_url,whatsapp_number,created_at")
       .eq("is_active", true)
       .order("created_at", { ascending: false });
 
@@ -337,7 +335,6 @@ async function loadSongs() {
       return typeof url === "string" && (url.trim().startsWith("https://") || url.trim().startsWith("http://"));
     });
     renderSongs(searchInput.value);
-    songs.slice(0, 3).forEach(song => preloadTrack(song.preview_url || song.audio_url || ""));
 
   } catch (error) {
     console.error(error);
