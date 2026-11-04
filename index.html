@@ -8,7 +8,7 @@
   <title>Store Ikbal Sopan — Music Store</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=20261104-9">
+  <link rel="stylesheet" href="style.css?v=20261104-10">
 </head>
 <body>
 
@@ -22,6 +22,17 @@
     <a href="#katalog">Music</a>
     <a href="#about">About</a>
   </nav>
+  <div class="theme-picker" id="themePicker">
+    <button class="theme-toggle" id="themeToggle" type="button" aria-expanded="false" aria-label="Pilih tema"><span class="theme-toggle-dot"></span><span>TEMA</span><span class="theme-chevron">⌄</span></button>
+    <div class="theme-menu" id="themeMenu" hidden>
+      <div class="theme-menu-title">PILIH SUASANA</div>
+      <button type="button" data-theme-choice="midnight"><i class="theme-swatch swatch-midnight"></i><span><b>Midnight Green</b><small>Dark · Green</small></span><span class="theme-check">✓</span></button>
+      <button type="button" data-theme-choice="ocean"><i class="theme-swatch swatch-ocean"></i><span><b>Midnight Blue</b><small>Dark · Blue</small></span><span class="theme-check">✓</span></button>
+      <button type="button" data-theme-choice="purple"><i class="theme-swatch swatch-purple"></i><span><b>Purple Galaxy</b><small>Dark · Purple</small></span><span class="theme-check">✓</span></button>
+      <button type="button" data-theme-choice="sunset"><i class="theme-swatch swatch-sunset"></i><span><b>Sunset Orange</b><small>Dark · Orange</small></span><span class="theme-check">✓</span></button>
+      <button type="button" data-theme-choice="light"><i class="theme-swatch swatch-light"></i><span><b>Light Minimal</b><small>Light · Clean</small></span><span class="theme-check">✓</span></button>
+    </div>
+  </div>
   <a href="admin.html" class="admin-link">ADMIN ↗</a>
 </header>
 
@@ -158,6 +169,6 @@
 </div>
 <script src="config.js?v=20261104-9"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="app.js?v=20261104-9"></script>
+<script src="app.js?v=20261104-10"></script>
 </body>
 </html>
