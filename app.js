@@ -145,7 +145,7 @@ function updateMusicControls() {
 function resetPlayer() {
   stopAudioVisualizer();
   if (currentButton) {
-    currentButton.textContent = "▶ Preview";
+    currentButton.innerHTML = '<span class="card-play-icon">▶</span>';
   }
 
   if (currentCard) {
@@ -401,7 +401,7 @@ function changeTrack(direction) {
   const url = song && (song.preview_url || song.audio_url || '');
   if (!url) return;
   const card = document.querySelector('.song-card[data-song-index="' + songs.indexOf(song) + '"]');
-  const button = (card && card.querySelector('.play-button')) || document.createElement('button');
+  const button = (card && card.querySelector('.card-preview')) || document.createElement('button');
   playSong(url, button);
 }
 
