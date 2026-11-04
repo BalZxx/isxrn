@@ -859,3 +859,67 @@ body[data-theme="light"] .brand-icon{color:#fff}
 @media(prefers-reduced-motion:reduce){.is-wave.is-fallback i{animation:none!important}}
 
 .is-wave.is-fallback:not(.is-playing) i{animation:none!important;transform:scaleY(.25);opacity:.22}
+
+
+/* IPHONE NOW PLAYING — refined Apple Music inspired visualizer */
+.is-full-player{
+  background:
+    radial-gradient(ellipse at 50% 18%,rgba(250,35,59,.19),transparent 42%),
+    radial-gradient(ellipse at 50% 72%,rgba(250,35,59,.08),transparent 48%),
+    linear-gradient(180deg,#19191d 0%,#101014 52%,#08080b 100%);
+  padding-top:calc(22px + env(safe-area-inset-top));
+}
+.is-close-player{
+  width:46px;height:34px;margin-bottom:22px;
+  background:rgba(255,255,255,.10);color:#f5f5f7;
+  border:1px solid rgba(255,255,255,.08);backdrop-filter:blur(18px);
+}
+.is-full-inner{width:min(440px,100%)}
+.is-full-kicker{color:#a1a1aa;letter-spacing:1.5px;font-size:9px;margin-bottom:25px}
+.is-full-cover{
+  width:min(76vw,350px);border-radius:22px;
+  box-shadow:0 28px 75px rgba(0,0,0,.48),0 0 55px rgba(250,35,59,.10);
+}
+.is-full-inner h2{font:700 23px -apple-system,BlinkMacSystemFont,"SF Pro Display","Space Grotesk",sans-serif;letter-spacing:-.45px;margin:24px 0 5px}
+.is-full-inner>p{color:#a1a1aa;font-size:14px}
+.is-wave{
+  height:66px;max-width:390px;margin:20px auto 14px;padding:0 8px;
+  gap:3px;border:0;border-radius:0;background:transparent;
+  -webkit-mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent);
+  mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent);
+}
+.is-wave i{
+  width:3px;min-width:2px;max-height:58px;min-height:3px;
+  border-radius:999px;opacity:.82;
+  background:linear-gradient(180deg,#fff 0%,#ff8794 42%,#fa233b 100%);
+  box-shadow:0 0 9px rgba(250,35,59,.22);
+  transition:height .065s linear,opacity .12s linear;
+}
+.is-wave.is-live.is-playing i{animation:none}
+.is-wave.is-live:not(.is-playing) i{height:3px!important;opacity:.2!important}
+.is-full-seek{height:4px;accent-color:#fa233b}
+.is-full-seek::-webkit-slider-thumb{width:11px;height:11px;accent-color:#fa233b}
+.is-full-times{color:#92929a;font-size:11px;font-variant-numeric:tabular-nums}
+.is-full-controls{gap:42px;margin:27px 0 25px}
+.is-full-controls button{color:#f5f5f7;font-size:25px}
+.is-full-controls .is-full-play{
+  width:66px;height:66px;background:#f5f5f7;color:#17171b;
+  box-shadow:0 8px 25px rgba(0,0,0,.25);font-size:25px;
+}
+.is-full-options{color:#a1a1aa}
+.is-full-options select{background:rgba(255,255,255,.08);color:#f5f5f7;border:1px solid rgba(255,255,255,.12)}
+.is-full-options input{accent-color:#fa233b}
+.is-mini-player{
+  background:rgba(31,31,35,.88);border-color:rgba(255,255,255,.12);
+  box-shadow:0 16px 48px rgba(0,0,0,.42),0 1px 0 rgba(255,255,255,.06) inset;
+}
+.is-mini-progress span{background:#fa233b}
+.is-player-icon:hover{color:#ff6678}
+@media(max-width:600px){
+  .is-full-player{padding-left:24px;padding-right:24px}
+  .is-full-cover{width:min(74vw,330px);border-radius:20px}
+  .is-wave{height:58px;margin:18px auto 13px;gap:2.5px}
+  .is-wave i{max-height:52px}
+  .is-full-controls{margin:24px 0;gap:38px}
+}
+@media(prefers-reduced-motion:reduce){.is-wave i{transition:none!important}}
