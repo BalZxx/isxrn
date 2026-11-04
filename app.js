@@ -405,8 +405,27 @@ function changeTrack(direction) {
   playSong(url, button);
 }
 
+// MEMUAT LOGO TOKO DARI PENGATURAN SUPABASE
+async function loadStoreLogo() {
+  if (!window.supabase || !CONFIG.SUPABASE_URL || !CONFIG.SUPABASE_ANON_KEY) return;
+  try {
+    const db = window.supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
+    const { data, error } = await db.from("store_settings").select("logo_url").eq("id", "main").maybeSingle();
+    if (error) throw error;
+    if (!data?.logo_url) return;
+    document.querySelectorAll("[data-store-logo]").forEach(img => {
+      img.src = data.logo_url + (data.logo_url.includes("?") ? "&" : "?") + "v=" + Date.now();
+      img.hidden = false;
+    });
+    document.querySelectorAll("[data-logo-fallback]").forEach(node => node.hidden = true);
+  } catch (error) {
+    console.info("Logo toko memakai logo bawaan.", error.message);
+  }
+}
+
 // JALANKAN KATALOG
 setupPersistentPlayer();
+loadStoreLogo();
 loadSongs();
 
 // AUDIO VISUALIZER REAL-TIME
