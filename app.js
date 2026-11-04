@@ -96,7 +96,7 @@ function formatMusicTime(seconds) {
 function buyLink(song) {
   const artistPhones = {
     "ikbal sopan": "6283148451522",
-    "kikuk neverdie": "6283805979397"
+    "rizz neverdie": "6283805979397"
   };
   const artistKey = String(song.artist || "").trim().toLowerCase();
   const recipient = String(song.whatsapp_number || artistPhones[artistKey] || PHONE).replace(/\\D/g, "");
@@ -608,6 +608,6 @@ if(musicRequestForm)musicRequestForm.addEventListener("submit",event=>{
   const initial=document.getElementById("requestInitial").value.trim();
   const detail=document.getElementById("requestDetail").value.trim();
   if(!initial)return;
-  const message="Halo Store Ikbal Sopan, saya ingin memesan jasa inisial remix.\nInisial/nama remix: "+initial+"\nHarga: Rp25.000"+(detail?"\nDetail pesanan: "+detail:"");
+  const message="Halo ISxRN, saya ingin memesan jasa inisial remix.\nInisial/nama remix: "+initial+"\nHarga: Rp25.000"+(detail?"\nDetail pesanan: "+detail:"");
   window.open("https://wa.me/"+PHONE+"?text="+encodeURIComponent(message),"_blank","noopener");
 });
