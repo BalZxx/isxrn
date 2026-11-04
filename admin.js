@@ -430,11 +430,11 @@ $("uploadRemixSampleBtn").addEventListener("click",async()=>{
   try{
     const ext=(file.name.split(".").pop()||"mp3").toLowerCase().replace(/[^a-z0-9]/g,"");
     const path="remix-samples/"+Date.now()+"-"+Math.random().toString(36).slice(2,8)+"."+ext;
-    const {error:uploadError}=await supabaseClient.storage.from("music").upload(path,file,{cacheControl:"3600",upsert:false,contentType:file.type});
+    const {error:uploadError}=await supabaseClient.storage.from("remix-samples").upload(path,file,{cacheControl:"3600",upsert:false,contentType:file.type});
     if(uploadError)throw uploadError;
-    const {data:urlData}=supabaseClient.storage.from("music").getPublicUrl(path);
+    const {data:urlData}=supabaseClient.storage.from("remix-samples").getPublicUrl(path);
     const {error:saveError}=await supabaseClient.from("remix_audio_samples").insert({title,audio_url:urlData.publicUrl,storage_path:path});
-    if(saveError){await supabaseClient.storage.from("music").remove([path]);throw saveError;}
+    if(saveError){await supabaseClient.storage.from("remix-samples").remove([path]);throw saveError;}
     $("remixSampleTitle").value="";$("remixSampleFile").value="";
     showMessage("remixSampleMessage","Contoh audio berhasil diunggah.");await loadRemixSamplesAdmin();
   }catch(error){showMessage("remixSampleMessage","Gagal upload: "+error.message);}
@@ -446,6 +446,6 @@ async function deleteRemixSample(id){
   if(error){showMessage("remixSampleMessage","Gagal mengambil data audio: "+error.message);return;}
   const {error:deleteError}=await supabaseClient.from("remix_audio_samples").delete().eq("id",id);
   if(deleteError){showMessage("remixSampleMessage","Gagal menghapus: "+deleteError.message);return;}
-  if(data.storage_path)await supabaseClient.storage.from("music").remove([data.storage_path]);
+  if(data.storage_path)await supabaseClient.storage.from("remix-samples").remove([data.storage_path]);
   showMessage("remixSampleMessage","Contoh audio berhasil dihapus.");await loadRemixSamplesAdmin();
 }
