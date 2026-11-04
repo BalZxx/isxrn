@@ -375,6 +375,25 @@ function setupPersistentPlayer() {
   document.getElementById("isFullVolume").addEventListener("input", e => {
     if (currentAudio) currentAudio.volume = Number(e.target.value);
   });
+
+  // Swipe kiri/kanan pada area pemutar untuk ganti lagu.
+  const full = document.getElementById("isFullPlayer");
+  let swipeStart = null;
+  full.addEventListener("pointerdown", event => {
+    if (event.pointerType === "mouse" && event.button !== 0) return;
+    if (event.target.closest("button,input,select,label")) return;
+    swipeStart = { x: event.clientX, y: event.clientY, id: event.pointerId };
+  });
+  full.addEventListener("pointerup", event => {
+    if (!swipeStart || swipeStart.id !== event.pointerId) return;
+    const dx = event.clientX - swipeStart.x;
+    const dy = event.clientY - swipeStart.y;
+    swipeStart = null;
+    if (Math.abs(dx) >= 55 && Math.abs(dx) > Math.abs(dy) * 1.25) {
+      changeTrack(dx < 0 ? 1 : -1);
+    }
+  });
+  full.addEventListener("pointercancel", () => { swipeStart = null; });
 }
 function showPersistentPlayer() {
   if (!currentAudio) return;
@@ -440,15 +459,20 @@ async function togglePersistentPlayback() {
   syncPersistentButtons();
 }
 function changeTrack(direction) {
-  if (!songs.length) return;
-  const index = currentSong ? songs.indexOf(currentSong) : -1;
-  const next = (index + direction + songs.length) % songs.length;
-  const song = songs[next];
-  const url = song && (song.preview_url || song.audio_url || '');
-  if (!url) return;
-  const card = document.querySelector('.song-card[data-song-index="' + songs.indexOf(song) + '"]');
-  const button = (card && card.querySelector('.card-preview')) || document.createElement('button');
-  playSong(url, button);
+  if (!songs.length || !currentSong) return;
+  const currentIndex = songs.indexOf(currentSong);
+  if (currentIndex < 0) return;
+  // Lewati lagu yang belum memiliki file preview/audio.
+  for (let step = 1; step <= songs.length; step++) {
+    const nextIndex = (currentIndex + direction * step + songs.length) % songs.length;
+    const song = songs[nextIndex];
+    const url = song && (song.preview_url || song.audio_url || "");
+    if (!url) continue;
+    const card = document.querySelector('.song-card[data-song-index="' + nextIndex + '"]');
+    const button = (card && card.querySelector(".card-preview")) || document.createElement("button");
+    playSong(url, button);
+    return;
+  }
 }
 
 // MEMUAT LOGO TOKO DARI PENGATURAN SUPABASE
@@ -511,7 +535,7 @@ function startAudioVisualizer(audio) {
         const target = Math.pow(raw, 0.9) * envelope;
         levels[index] += (target - levels[index]) * (target > levels[index] ? 0.24 : 0.11);
         const mirrored = bars.length - 1 - index;
-        const height = 3 + levels[index] * 38;
+        const height = 3 + levels[index] * 50;
         [index, mirrored].forEach(pos => {
           bars[pos].style.height = height.toFixed(1) + "px";
           bars[pos].style.opacity = String(0.28 + levels[index] * 0.62);
