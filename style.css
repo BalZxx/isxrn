@@ -724,3 +724,12 @@ body{background:radial-gradient(ellipse at 80% 0%,rgba(134,180,71,.09),transpare
 .is-wave.is-playing i{animation:none}
 .is-wave.is-fallback i{animation:is-wave-pulse .8s ease-in-out infinite alternate}
 @media(max-width:600px){.song-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.song-info{padding:11px}.song-bottom{align-items:flex-start;flex-direction:column;gap:10px}.song-bottom .buy-button{width:100%;text-align:center}.card-preview{width:36px;height:36px}}
+
+/* Logo dinamis dari Dashboard Admin */
+.brand-icon{overflow:hidden;position:relative}
+.brand-icon img{width:100%;height:100%;object-fit:contain;padding:3px}
+.art-logo{display:grid;place-items:center;letter-spacing:0}
+.art-logo img{width:175px;height:175px;object-fit:contain}
+.about-mark{display:flex;align-items:center;justify-content:center}
+.about-mark img{width:min(22vw,230px);height:min(22vw,230px);object-fit:contain}
+@media(max-width:650px){.art-logo img{width:145px;height:145px}.about-mark img{width:130px;height:130px}}
