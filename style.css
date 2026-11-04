@@ -784,3 +784,35 @@ body[data-theme="light"] .is-player-icon{color:#172033}
 body[data-theme="light"] .is-full-player{background:radial-gradient(ellipse at 50% 25%,#dce8f7 0%,#f2f5fa 55%,#e6ecf4 100%);color:#172033}
 body[data-theme="light"] .is-full-kicker{color:#526987}
 @media(max-width:650px){.theme-picker{margin-left:auto;margin-right:8px}.theme-toggle{height:36px;padding:0 9px;font-size:9px}.theme-menu{right:-48px;width:220px}.admin-link{padding:10px 9px;font-size:9px}}
+
+
+/* TRANSISI ANTAR TEMA */
+body,.navbar,.hero,.features,.catalog,.about,footer,.song-card,.song-cover-wrap,.search-box,.is-mini-player,.is-full-player,.theme-toggle,.theme-menu,.theme-menu button,.admin-link,.hero-button,.buy-button{
+  transition:background-color .42s ease,color .35s ease,border-color .35s ease,box-shadow .4s ease;
+}
+.theme-menu:not([hidden]){animation:themeMenuIn .2s ease both;transform-origin:top right}
+@keyframes themeMenuIn{from{opacity:0;transform:translateY(-7px) scale(.97)}to{opacity:1;transform:translateY(0) scale(1)}}
+.theme-toggle-dot{transition:background .35s ease,box-shadow .35s ease}
+body[data-theme="ocean"] .navbar{background:rgba(8,13,24,.94)}
+body[data-theme="purple"] .navbar{background:rgba(16,10,27,.94)}
+body[data-theme="sunset"] .navbar{background:rgba(23,16,12,.94)}
+body[data-theme="light"] .navbar{background:rgba(248,250,253,.94)}
+body[data-theme="ocean"] .hero{background:radial-gradient(ellipse at 75% 48%,#55b8ff20,transparent 36%),linear-gradient(120deg,#101c30,#080d18 70%)}
+body[data-theme="purple"] .hero{background:radial-gradient(ellipse at 75% 48%,#bd83ff22,transparent 36%),linear-gradient(120deg,#21152e,#100a1b 70%)}
+body[data-theme="sunset"] .hero{background:radial-gradient(ellipse at 75% 48%,#ff9b5522,transparent 36%),linear-gradient(120deg,#2a1b12,#17100c 70%)}
+body[data-theme="ocean"] .about{background:radial-gradient(ellipse at 15% 50%,#234d6e 0%,transparent 38%),linear-gradient(120deg,#101c30,#080d18)}
+body[data-theme="purple"] .about{background:radial-gradient(ellipse at 15% 50%,#4a2c68 0%,transparent 38%),linear-gradient(120deg,#21152e,#100a1b)}
+body[data-theme="sunset"] .about{background:radial-gradient(ellipse at 15% 50%,#704126 0%,transparent 38%),linear-gradient(120deg,#2a1b12,#17100c)}
+body[data-theme="ocean"] .song-card,body[data-theme="purple"] .song-card,body[data-theme="sunset"] .song-card{background:var(--panel);border-color:var(--border)}
+body[data-theme="light"] .song-card{background:#fff;border-color:#dce2eb}
+body[data-theme="light"] .song-bottom{border-color:#dce2eb}
+body[data-theme="light"] .song-price{color:#172033}
+body[data-theme="light"] .song-meta p{color:#687386}
+body[data-theme="light"] .song-cover-wrap{background:#e9edf3}
+body[data-theme="light"] .search-box{background:#fff;border-color:#dce2eb}
+body[data-theme="light"] .features{background:#e9edf3;border-color:#dce2eb}
+body[data-theme="light"] .admin-link{border-color:#b9c9df}
+body[data-theme="light"] .brand-icon{color:#fff}
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+}
