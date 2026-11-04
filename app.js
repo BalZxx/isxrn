@@ -52,6 +52,9 @@ let audioContext = null;
 let analyser = null;
 let visualizerFrame = null;
 let visualizerSource = null;
+const audioPreloadCache = new Map();
+function preloadTrack(url){if(!url||audioPreloadCache.has(url))return audioPreloadCache.get(url);const audio=new Audio();audio.crossOrigin='anonymous';audio.preload='auto';audio.src=url;audio.load();audioPreloadCache.set(url,audio);return audio;}
+function preloadAdjacentTracks(song){const index=songs.indexOf(song);if(index<0||!songs.length)return;[1,2].forEach(step=>{const next=songs[(index+step)%songs.length];if(next)preloadTrack(next.preview_url||next.audio_url||'');});}
 
 const songList = document.getElementById("songList");
 const searchInput = document.getElementById("searchInput");
@@ -239,7 +242,6 @@ async function playSong(url, button) {
   // Hentikan lagu sebelumnya
   if (currentAudio) {
     currentAudio.pause();
-    currentAudio.src = "";
     resetPlayer();
   }
 
@@ -247,15 +249,16 @@ async function playSong(url, button) {
     btn.innerHTML = '<span class="card-play-icon">▶</span>';
   });
 
-  const audio = new Audio();
+  const audio = preloadTrack(url) || new Audio();
   audio.crossOrigin = "anonymous";
-  audio.preload = "metadata";
-  audio.src = url;
+  audio.preload = "auto";
+  if (audio.src !== url) audio.src = url;
 
   currentAudio = audio;
   currentButton = button;
   currentCard = button.closest(".song-card");
   currentSong = songs.find(song => (song.preview_url || song.audio_url || "") === url) || null;
+  if (currentSong) preloadAdjacentTracks(currentSong);
 
   audio.addEventListener("loadedmetadata", updateMusicControls);
   audio.addEventListener("durationchange", updateMusicControls);
@@ -266,9 +269,10 @@ async function playSong(url, button) {
     syncPersistentButtons();
   });
   audio.addEventListener("pause", () => { pauseAudioVisualizer(); syncPersistentButtons(); });
-  audio.addEventListener("ended", resetPlayer);
+  audio.addEventListener("ended", () => { if (audio === currentAudio) resetPlayer(); });
 
   audio.addEventListener("error", () => {
+    if (audio !== currentAudio) return;
     console.error("Audio gagal dimuat:", url);
     alert("Preview tidak dapat diputar. Periksa file audio.");
     resetPlayer();
@@ -322,6 +326,7 @@ async function loadSongs() {
       return typeof url === "string" && (url.trim().startsWith("https://") || url.trim().startsWith("http://"));
     });
     renderSongs(searchInput.value);
+    songs.slice(0, 3).forEach(song => preloadTrack(song.preview_url || song.audio_url || ""));
 
   } catch (error) {
     console.error(error);
@@ -578,3 +583,5 @@ function stopAudioVisualizer() {
     bar.style.transform = "";
   });
 }
+
+const musicRequestForm=document.getElementById("musicRequestForm");if(musicRequestForm)musicRequestForm.addEventListener("submit",event=>{event.preventDefault();const genre=document.getElementById("requestGenre").value;const initial=document.getElementById("requestInitial").value.trim();const detail=document.getElementById("requestDetail").value.trim();if(!genre||!initial)return;const message="Halo Store Ikbal Sopan, saya ingin request musik:\nGenre: "+genre+"\nInisial/nama remix: "+initial+(detail?"\nDetail: "+detail:"");window.open("https://wa.me/"+PHONE+"?text="+encodeURIComponent(message),"_blank","noopener");});
