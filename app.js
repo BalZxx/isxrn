@@ -265,7 +265,7 @@ async function playSong(url, button) {
     showPersistentPlayer();
     syncPersistentButtons();
   });
-  audio.addEventListener("pause", syncPersistentButtons);
+  audio.addEventListener("pause", () => { pauseAudioVisualizer(); syncPersistentButtons(); });
   audio.addEventListener("ended", resetPlayer);
 
   audio.addEventListener("error", () => {
