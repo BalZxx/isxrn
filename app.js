@@ -109,7 +109,7 @@ function buyLink(song) {
     "",
     "Mohon info cara pembayaran dan proses pengirimannya. Terima kasih!"
   ].join("\n");
-  return \`https://wa.me/\${recipient}?text=\${encodeURIComponent(message)}\`;
+  return `https://wa.me/${recipient}?text=${encodeURIComponent(message)}`;
 }
 
 // MENAMPILKAN KATALOG MUSIK
