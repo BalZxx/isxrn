@@ -744,3 +744,43 @@ body{background:radial-gradient(ellipse at 80% 0%,rgba(134,180,71,.09),transpare
 .card-play-icon{display:block;font-size:17px;font-weight:900;line-height:1;transform:translateX(1px)}
 .card-preview:active{transform:scale(.94)}
 @media(max-width:650px){.card-preview{width:40px;height:40px;right:9px;bottom:9px}.card-play-icon{font-size:15px}}
+
+
+/* THEME SWITCHER */
+.theme-picker{position:relative;margin-left:auto;margin-right:16px}
+.theme-toggle{height:40px;padding:0 13px;display:flex;align-items:center;gap:9px;border:1px solid var(--border);border-radius:7px;background:var(--panel);color:var(--white);font-size:10px;font-weight:800;letter-spacing:1px;cursor:pointer;transition:.2s}
+.theme-toggle:hover{border-color:var(--green);color:var(--green)}
+.theme-toggle-dot{width:9px;height:9px;border-radius:50%;background:var(--green);box-shadow:0 0 12px var(--green)}
+.theme-chevron{font-size:15px;color:var(--muted)}
+.theme-menu{position:absolute;right:0;top:calc(100% + 12px);width:235px;padding:9px;background:var(--panel);border:1px solid var(--border);border-radius:12px;box-shadow:0 18px 55px #0009;z-index:60}
+.theme-menu-title{padding:9px 10px 12px;color:var(--muted);font-size:9px;font-weight:800;letter-spacing:2px}
+.theme-menu button{width:100%;display:flex;align-items:center;gap:11px;padding:10px;border:0;border-radius:8px;background:transparent;color:var(--white);text-align:left;cursor:pointer}
+.theme-menu button:hover,.theme-menu button.active{background:var(--panel2)}
+.theme-menu button>span:nth-child(2){display:flex;flex:1;flex-direction:column;gap:3px}
+.theme-menu b{font-size:11px}.theme-menu small{font-size:9px;color:var(--muted)}
+.theme-swatch{width:27px;height:27px;flex:none;border-radius:8px;border:1px solid #ffffff30}
+.swatch-midnight{background:linear-gradient(135deg,#080909 50%,#c6ff55 50%)}
+.swatch-ocean{background:linear-gradient(135deg,#080d18 50%,#55b8ff 50%)}
+.swatch-purple{background:linear-gradient(135deg,#100a1b 50%,#bd83ff 50%)}
+.swatch-sunset{background:linear-gradient(135deg,#17100c 50%,#ff9b55 50%)}
+.swatch-light{background:linear-gradient(135deg,#f5f6f8 50%,#3978d5 50%)}
+.theme-check{opacity:0;color:var(--green);font-weight:900}
+.theme-menu button.active .theme-check{opacity:1}
+body[data-theme="ocean"]{--bg:#080d18;--panel:#101827;--panel2:#172338;--white:#f2f6ff;--muted:#8998b1;--green:#55b8ff;--border:#25354d}
+body[data-theme="purple"]{--bg:#100a1b;--panel:#191127;--panel2:#241936;--white:#faf4ff;--muted:#a99ab8;--green:#bd83ff;--border:#38264d}
+body[data-theme="sunset"]{--bg:#17100c;--panel:#211711;--panel2:#2d2018;--white:#fff6ef;--muted:#b5a092;--green:#ff9b55;--border:#493126}
+body[data-theme="light"]{--bg:#f4f6f9;--panel:#ffffff;--panel2:#e9edf3;--white:#172033;--muted:#687386;--green:#3978d5;--border:#dce2eb}
+body[data-theme="light"] .navbar{background:rgba(248,250,253,.94)}
+body[data-theme="light"] .hero{background:radial-gradient(ellipse at 75% 48%,#3978d51c,transparent 35%),linear-gradient(120deg,#edf2f8,#f8fafc 70%)}
+body[data-theme="light"] .art-card{background:linear-gradient(145deg,#dce7f6,#f5f8fc 55%,#e5edf7);border-color:#b8cbe4;box-shadow:0 25px 70px #26364a22}
+body[data-theme="light"] .art-top,body[data-theme="light"] .art-bottom{color:#526987}
+body[data-theme="light"] .art-logo span{color:#172033}
+body[data-theme="light"] .floating-tag{color:#fff}
+body[data-theme="light"] .about{background:radial-gradient(ellipse at 15% 50%,#3978d51b 0%,transparent 35%),#edf1f6}
+body[data-theme="light"] .search-box input{color:var(--white)}
+body[data-theme="light"] .is-mini-player{background:rgba(255,255,255,.94);border-color:#3978d555;box-shadow:0 14px 50px #26364a30}
+body[data-theme="light"] .is-mini-main{color:#172033}
+body[data-theme="light"] .is-player-icon{color:#172033}
+body[data-theme="light"] .is-full-player{background:radial-gradient(ellipse at 50% 25%,#dce8f7 0%,#f2f5fa 55%,#e6ecf4 100%);color:#172033}
+body[data-theme="light"] .is-full-kicker{color:#526987}
+@media(max-width:650px){.theme-picker{margin-left:auto;margin-right:8px}.theme-toggle{height:36px;padding:0 9px;font-size:9px}.theme-menu{right:-48px;width:220px}.admin-link{padding:10px 9px;font-size:9px}}
