@@ -11,3 +11,21 @@ drop policy if exists "Public can read remix samples" on public.remix_audio_samp
 create policy "Public can read remix samples" on public.remix_audio_samples for select using (true);
 drop policy if exists "Authenticated admins manage remix samples" on public.remix_audio_samples;
 create policy "Authenticated admins manage remix samples" on public.remix_audio_samples for all to authenticated using (true) with check (true);
+
+
+-- Bucket khusus untuk contoh audio Inisial Remix (terpisah dari audio katalog).
+insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+values ('remix-samples', 'remix-samples', true, 31457280, array['audio/mpeg','audio/mp3','audio/wav','audio/x-wav','audio/mp4','audio/aac','audio/ogg','audio/webm','audio/flac'])
+on conflict (id) do update set public = true, file_size_limit = 31457280;
+
+drop policy if exists "Public read remix sample files" on storage.objects;
+create policy "Public read remix sample files" on storage.objects
+for select using (bucket_id = 'remix-samples');
+
+drop policy if exists "Authenticated upload remix sample files" on storage.objects;
+create policy "Authenticated upload remix sample files" on storage.objects
+for insert to authenticated with check (bucket_id = 'remix-samples');
+
+drop policy if exists "Authenticated delete remix sample files" on storage.objects;
+create policy "Authenticated delete remix sample files" on storage.objects
+for delete to authenticated using (bucket_id = 'remix-samples');
