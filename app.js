@@ -19,6 +19,8 @@ function setupThemePicker(){
       button.classList.toggle("active",active);
       button.setAttribute("aria-pressed",String(active));
     });
+    const themeMeta=document.querySelector('meta[name="theme-color"]');
+    if(themeMeta)themeMeta.content=getComputedStyle(document.body).getPropertyValue("--bg").trim()||"#080909";
     const dot=toggle.querySelector(".theme-toggle-dot");
     if(dot)dot.style.background=getComputedStyle(document.body).getPropertyValue("--green").trim();
     try{localStorage.setItem("store-ikbal-theme",theme)}catch(_){}
