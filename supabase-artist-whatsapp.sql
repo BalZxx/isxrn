@@ -9,3 +9,9 @@ set whatsapp_number = case
   else '6283148451522'
 end
 where whatsapp_number is null or trim(whatsapp_number) = '';
+
+-- Ganti nama artis lama ke nama baru untuk katalog yang sudah tersimpan.
+update public.songs
+set artist = 'Rizz Neverdie',
+    whatsapp_number = '6283805979397'
+where lower(trim(artist)) = 'kikuk neverdie';
