@@ -1011,3 +1011,23 @@ footer{padding:32px clamp(22px,8vw,130px);background:#070907;border-color:rgba(2
 .is-mini-player{border-radius:22px;background:rgba(18,23,19,.9);border-color:rgba(201,247,122,.22);backdrop-filter:blur(28px)}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
 @media(max-width:650px){.navbar{height:68px;padding-inline:17px}.brand{font-size:12px}.admin-link{padding:9px 13px;font-size:9px}.hero{min-height:690px;padding:75px 7% 85px}.hero h1{font-size:clamp(56px,14vw,70px)}.catalog{padding:72px 5% 88px}.catalog-heading{align-items:center}.catalog-heading h2{font-size:36px}.song-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.song-card{border-radius:13px}.song-info{padding:12px}.song-meta h3{font-size:12px}.song-price{font-size:15px}.song-actions{gap:6px}.song-actions button,.song-actions a{font-size:9px;padding:10px 4px}.card-preview{width:38px;height:38px}.music-request{padding:65px 6%}.about{padding:65px 7%}}
+
+
+/* ISxRN — official co-founder social links */
+.team-section{max-width:1180px;margin:0 auto;padding:clamp(70px,9vw,112px) clamp(22px,8vw,120px);border-top:1px solid rgba(255,255,255,.07);background:radial-gradient(ellipse at 50% 0,rgba(201,247,122,.08),transparent 48%)}
+.team-heading{max-width:650px;margin-bottom:34px}
+.team-heading h2{font:700 clamp(38px,5vw,58px)/1.05 "Space Grotesk",sans-serif;letter-spacing:-.06em;margin:14px 0}
+.team-heading h2 span{background:linear-gradient(100deg,#e2ffc0,#a9dc68 65%,#8cb64e);-webkit-background-clip:text;background-clip:text;color:transparent}
+.team-heading p{color:#a2a69f;line-height:1.8}
+.team-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+.team-card{padding:clamp(22px,3vw,34px);border:1px solid rgba(255,255,255,.09);border-radius:20px;background:linear-gradient(145deg,rgba(255,255,255,.045),rgba(255,255,255,.012));box-shadow:0 18px 45px #0002;transition:transform .25s,border-color .25s}
+.team-card:hover{transform:translateY(-4px);border-color:rgba(201,247,122,.3)}
+.team-number{font-size:10px;letter-spacing:2px;color:#c9f77a;font-weight:800}
+.team-card h3{font:700 clamp(24px,3vw,32px) "Space Grotesk",sans-serif;letter-spacing:-1px;margin:22px 0 5px}
+.team-card>p{color:#92998f;font-size:13px;margin:0 0 24px}
+.team-socials{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.team-socials a{display:flex;align-items:center;justify-content:space-between;gap:5px;padding:11px 10px;border:1px solid rgba(255,255,255,.1);border-radius:10px;color:#e9eee5;text-decoration:none;font-size:11px;font-weight:700;transition:.2s}
+.team-socials a span{color:#c9f77a}
+.team-socials a:hover{background:rgba(201,247,122,.09);border-color:rgba(201,247,122,.35)}
+.team-trust{text-align:center;margin-top:28px;color:#9aa292;font-size:10px;letter-spacing:2px}
+@media(max-width:650px){.team-section{padding:65px 6%}.team-grid{grid-template-columns:1fr;gap:13px}.team-card{padding:23px}.team-socials{gap:7px}.team-socials a{font-size:10px;padding:11px 8px}}
